@@ -4,33 +4,25 @@ from dash import html, dcc, dash_table#, Output, Input, State
 # import dash_bootstrap_components as dbc
 import pandas as pd
 
-df = pd.read_csv('/assets/dre_random.csv', index_col=[0])
-df = df.drop(columns=['tipo', 'nivel'])
-data = df[['conta', 'JUL', 'AGO', 'OUT', 'NOV', 'DEZ']]
+df = pd.read_csv('./assets/dre_random.csv', index_col=[0])
+data = df[['conta', 'tipo', 'JUL', 'AGO', 'OUT', 'NOV', 'DEZ']]
 
-CONTENT_STYLE = {
-    "margin-left": "18rem",
-    "margin-right": "2rem",
-    "padding": "2rem 1rem",
-}
 
 dre = html.Div(
-    style=CONTENT_STYLE,
-    
+    style={'width': '100%'},
     children=[
     
-        html.Div([
-            dbc.Row(
-                children=[
-                    html.H1(children='Demonstração de Resultados de Exercício 2022'),
+        dbc.Container(
+            className='row',
+            style={'margin-top': '20px'},
+            children = [
+                    html.H3(children='Demonstração de Resultados de Exercício 2022'),
                     dcc.Dropdown(
                         options=['2021', '2022'], 
                         value='2022', 
                         id='period-dropdown', 
                         style={"max-width": "200px"}
                     )
-                ]
-            ),
         ]),
 
         # dcc.Loading(
@@ -40,13 +32,16 @@ dre = html.Div(
         # )
 
         html.Div(
-            id='dre-chart',
             style={'margin-top': '20px'},
             children=[
-
                 dbc.Row(
-                    id='dre-charts'
+                    id='dre-charts',
+                    style={'width': '100%'}
                 )
+
+                # dbc.Row(
+                #     id='dre-row-1'
+                # ),
 
                 # dbc.Row(
                 #     children=[

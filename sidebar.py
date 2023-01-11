@@ -7,10 +7,12 @@ SIDEBAR_STYLE = {
     "top": 0,
     "left": 0,
     "bottom": 0,
-    "width": "16rem",
+    "width": "12rem",
     "padding": "2rem 1rem",
     "background-color": "#f8f9fa",
 }
+# blue => #1284C3
+# shalow-gray => #f8f9fa
 
 # the styles for the main content position it to the right of the sidebar and
 # add some padding.
@@ -23,6 +25,7 @@ sidebar = html.Div(
         dbc.Nav(
             [
                 dbc.NavLink("Home", href="/", active="exact"),
+                dbc.NavLink("Indicadores", href="/indicadores", active="exact"),
                 dbc.NavLink("Balanço", href="/balanco", active="exact"),
                 dbc.NavLink("DRE", href="/dre", active="exact"),
             ],

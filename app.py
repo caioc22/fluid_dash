@@ -7,10 +7,19 @@ import pandas as pd, numpy as np
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
+CONTENT_STYLE = {
+    "margin-left": "14rem",
+    "width": "90%"
+}
+
+
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False), 
     sidebar, 
-    html.Div(id='page-content')
+    html.Div(
+        style=CONTENT_STYLE,
+        id='page-content'
+        )
 ])
 
 ## RENDER PAGES
@@ -26,6 +35,8 @@ def render_page_content(pathname):
         return html.P("Balanco")
     elif pathname == "/dre":
         return dre
+    elif pathname == "/indicadores":
+        return 'Indicadores'
     # If the user tries to reach a different page, return a 404 message
     return html.Div(
         [
@@ -44,10 +55,18 @@ def render_page_content(pathname):
 def add_charts(pathname):
     
     if pathname == "/dre":
-        rows = []
         columns = []
         
-        for field, c in zip( data['conta'], range(len(data['conta'])) ):
+        for field, op, c in zip( data['conta'], data['tipo'], range(len(data['conta'])) ):
+            
+            reversed = {}
+            color = {'color', 'rgba(50, 171, 96, 0.6)'}
+            line_color = {'color', 'rgba(50, 171, 96, 1.0)'}
+            if op == '-':
+                reversed = {'yaxis': {'autorange': 'reversed'}}
+                color = {'color', 'rgba(245, 39, 39, 0.6)'}
+                line_color = {'color', 'rgba(245, 39, 39, 1.0)'}
+            
             print(field, 'counter', c+1)
             y = data.loc[data['conta'] == field].iloc[:, 1:].T.iloc[:, 0]
             print(y)
@@ -58,38 +77,54 @@ def add_charts(pathname):
                 go.Scatter(
                     x=y.index.values,
                     y=y,
-                    marker={'color': '#f43b47'}
+                    marker={'color': '#f43b47'},
+                    showlegend=False
                 ))
 
             fig.add_trace(
                 go.Bar(
                     x=y.index.values,
                     y=y,
-                    marker={'color': '#0d6efd'}
+                    marker=dict(
+                        line=dict(
+                            width=1,
+                            **line_color,
+                            ),
+                        **color,
+                    ),
+                    showlegend=False
                 ))
+            
+            fig.update_layout( 
+                margin=dict(t=0, l=0, r=0),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                **reversed
+            )
 
             columns.append(
-                    dbc.Col(
-                        style={'width':     '33%'},
+                    dbc.Card(
+                        style={ 'width': '28%', 
+                                'height': '250px', 
+                                'margin-left': '10px', 
+                                'margin-bottom': '20px', 
+                                'padding': '8px',
+                                'vertical-align': 'text-top'
+                                },
+                        className = 'shadow-sm',
                         children=[
-                            dbc.Card([
-
-                                dbc.CardBody(
-                                    children=[
-                                        html.H6(field),
-                                        dcc.Graph(
-                                            className='four columns', 
-                                            style={'max-height': '250px'} ,
-                                            figure=fig
-                                        ) 
-                                ])
-                            ])
-                        ]
-                    )
+                            html.H6(field),
+                            dcc.Graph(
+                                # className='four columns', 
+                                style={'max-height': '249px'} ,
+                                figure=fig
+                            ),
+                    ])
                 )
             
-            if c == 2:
-                return columns
+            # if (c+1) == 6:
+        return columns
+
             # if (c+1) % 3 == 0:
             #     print('foi')
             #     rows.append(
@@ -103,10 +138,10 @@ def add_charts(pathname):
             #     columns = []
             #     return rows
 
-        return rows
-
     print('nao foi')
     return []
+
+app.name = 'Dashboard'
 
 
 if __name__ == '__main__':
