@@ -50,13 +50,15 @@ def render_page_content(pathname):
 
 @app.callback(
     Output('dre-charts', 'children'),
-    Input('url', 'pathname')
+    State('url', 'pathname'), Input('period-dropdown', 'value')
 )
-def add_charts(pathname):
-    
+def add_charts(pathname, period):
+    print(period)
     if pathname == "/dre":
         columns = []
         
+        data = pd.read_csv(f'./assets/dre_{period}.csv', index_col=[0])
+
         for field, op, c in zip( data['conta'], data['tipo'], range(len(data['conta'])) ):
             
             reversed = {}
@@ -68,12 +70,9 @@ def add_charts(pathname):
                 reversed = {'yaxis': {'autorange': 'reversed'}}
             
             print(field, 'counter', c+1)
-            print(data.columns)
             y = data.loc[data['conta'] == field].iloc[:, 1:]
-            y.drop(columns=['tipo', 'nivel'], inplace=True)
-            print(y.columns)
+            y.drop(columns=['tipo'], inplace=True)
             y = y.T.iloc[:, 0]
-            print(y)
 
             fig = go.Figure()
 

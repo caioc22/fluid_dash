@@ -4,8 +4,6 @@ from dash import html, dcc, dash_table#, Output, Input, State
 # import dash_bootstrap_components as dbc
 import pandas as pd
 
-data = pd.read_csv('./assets/dre_random.csv', index_col=[0])
-
 dre = html.Div(
     style={'width': '100%'},
     children=[
