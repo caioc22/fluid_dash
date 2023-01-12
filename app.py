@@ -5,7 +5,7 @@ from plotly import express as px, graph_objects as go
 from dre import dre, data
 import pandas as pd, numpy as np
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP])
 
 CONTENT_STYLE = {
     "margin-left": "14rem",
