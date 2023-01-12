@@ -4,9 +4,7 @@ from dash import html, dcc, dash_table#, Output, Input, State
 # import dash_bootstrap_components as dbc
 import pandas as pd
 
-df = pd.read_csv('./assets/dre_random.csv', index_col=[0])
-data = df[['conta', 'tipo', 'JUL', 'AGO', 'OUT', 'NOV', 'DEZ']]
-
+data = pd.read_csv('./assets/dre_random.csv', index_col=[0])
 
 dre = html.Div(
     style={'width': '100%'},
@@ -16,7 +14,10 @@ dre = html.Div(
             className='row',
             style={'margin-top': '20px'},
             children = [
-                    html.H3(children='Demonstração de Resultados de Exercício 2022'),
+                    html.H3(
+                        style={'font-family': 'Helvetica', 'color': '#0d6efd'},
+                        children='Demonstração de Resultados de Exercício 2022'
+                        ),
                     dcc.Dropdown(
                         options=['2021', '2022'], 
                         value='2022', 

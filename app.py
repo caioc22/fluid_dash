@@ -9,7 +9,7 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 CONTENT_STYLE = {
     "margin-left": "14rem",
-    "width": "90%"
+    "width": "100%"
 }
 
 
@@ -60,15 +60,19 @@ def add_charts(pathname):
         for field, op, c in zip( data['conta'], data['tipo'], range(len(data['conta'])) ):
             
             reversed = {}
-            color = {'color', 'rgba(50, 171, 96, 0.6)'}
-            line_color = {'color', 'rgba(50, 171, 96, 1.0)'}
+            color = 'rgba(50, 171, 96, 0.6)'
+            line_color = 'rgba(50, 171, 96, 1.0)'
             if op == '-':
+                color = 'rgba(245, 39, 39, 0.6)'
+                line_color = 'rgba(245, 39, 39, 1.0)'
                 reversed = {'yaxis': {'autorange': 'reversed'}}
-                color = {'color', 'rgba(245, 39, 39, 0.6)'}
-                line_color = {'color', 'rgba(245, 39, 39, 1.0)'}
             
             print(field, 'counter', c+1)
-            y = data.loc[data['conta'] == field].iloc[:, 1:].T.iloc[:, 0]
+            print(data.columns)
+            y = data.loc[data['conta'] == field].iloc[:, 1:]
+            y.drop(columns=['tipo', 'nivel'], inplace=True)
+            print(y.columns)
+            y = y.T.iloc[:, 0]
             print(y)
 
             fig = go.Figure()
@@ -85,13 +89,13 @@ def add_charts(pathname):
                 go.Bar(
                     x=y.index.values,
                     y=y,
-                    marker=dict(
-                        line=dict(
-                            width=1,
-                            **line_color,
-                            ),
-                        **color,
-                    ),
+                    marker={
+                        'line': {
+                            'width':1,
+                            'color': line_color,
+                            },
+                        'color': color
+                    },
                     showlegend=False
                 ))
             
