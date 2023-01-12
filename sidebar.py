@@ -25,15 +25,41 @@ sidebar = html.Div(
         dbc.Nav(
             [
                 dbc.NavLink(
+                    className="row",
                     children=[
-                        html.I(className="bi bi-house-door-fill"), html.P(["Home"])
+                        html.I(className="bi bi-house-door-fill"),
+                        "Home"
                     ], 
                     href="/", 
                     active="exact"),
 
-                dbc.NavLink("Indicadores", href="/indicadores", active="exact"),
-                dbc.NavLink("Balanço", href="/balanco", active="exact"),
-                dbc.NavLink("DRE", href="/dre", active="exact"),
+                dbc.NavLink(
+                    className="row",
+                    children=[
+                        html.I(className="bi bi-bar-chart"),
+                        "Indicadores"
+                    ], 
+                    href="/indicadores", 
+                    active="exact"),
+                    
+                dbc.NavLink(
+                    className="row",
+                    children=[
+                        html.I(className="bi bi-clipboard-data"),
+                        "Balanço"
+                    ], 
+                    href="/balanco", 
+                    active="exact"),
+                    
+                dbc.NavLink(
+                    className="row",
+                    children=[
+                        html.I(className="bi bi-graph-up"),
+                        "DRE"
+                    ], 
+                    href="/dre", 
+                    active="exact"),
+
             ],
             vertical=True,
             pills=True,
