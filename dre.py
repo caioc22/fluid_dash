@@ -19,7 +19,7 @@ dre = html.Div(
                     dcc.Dropdown(
                         options=['2021', '2022'], 
                         value='2022', 
-                        id='period-dropdown', 
+                        id='dre-period-dropdown', 
                         style={"max-width": "200px"}
                     )
         ]),

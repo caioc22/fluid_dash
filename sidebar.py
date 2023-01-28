@@ -10,7 +10,8 @@ SIDEBAR_STYLE = {
     "width": "12rem",
     "padding": "2rem 1rem",
     # "background-color": "#f8f9fa",
-    "background-color": "#1284C3"
+    # "background-color": "#1284C3"
+    "background": "linear-gradient(135deg, rgba(18,131,195,1) 0%, rgba(18,131,195,1) 34%, rgba(255,255,255,0) 100%)"
 }
 
 NAV_LINK_STYLE = "row link-light"
@@ -24,12 +25,15 @@ RESIZE_LOGO = 30
 
 sidebar = html.Div(
     [
-        dbc.Row(
+        html.Div(
+            className="row align-items-center link-light",
+            style={"font-size": "25px"},
             children=[
                 html.Img(src="assets/fluid_white.png", style={"height": f"{RESIZE_LOGO}%", "width": f"{RESIZE_LOGO}%"}),
-                html.H2("Fluid.BI", className="row display-4", style={'font-size': '30px'}),
+                # html.H2("Fluid.BI", className="row display-4", style={'font-size': '30px'}),
+                "Fluid.BI"
         ]),
-        # html.Hr(),
+        html.Hr(),
         dbc.Nav(
             [
                 dbc.NavLink(

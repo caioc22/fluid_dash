@@ -4,6 +4,7 @@ from plotly import express as px, graph_objects as go
 import pandas as pd, numpy as np
 
 from dre import dre
+from balanco import balanco
 from sidebar import sidebar
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP])
@@ -22,21 +23,26 @@ app.layout = html.Div([
         )
 ])
 
-## RENDER PAGES
+#===> RENDER PAGES
 @app.callback(
     Output("page-content", "children"), 
     Input("url", "pathname")
 )
 def render_page_content(pathname):
     print(pathname)
+
     if pathname == "/":
         return "This is Home page!"
-    elif pathname == "/balanco":
-        return html.P("Balanco")
-    elif pathname == "/dre":
-        return dre
+
     elif pathname == "/indicadores":
         return 'Indicadores'
+
+    elif pathname == "/balanco":
+        return balanco
+
+    elif pathname == "/dre":
+        return dre
+        
     # If the user tries to reach a different page, return a 404 message
     return html.Div(
         [
@@ -47,10 +53,10 @@ def render_page_content(pathname):
         className="p-3 bg-light rounded-3",
     )
 
-
+### DRE ###
 @app.callback(
     Output('dre-charts', 'children'),
-    State('url', 'pathname'), Input('period-dropdown', 'value')
+    State('url', 'pathname'), Input('dre-period-dropdown', 'value')
 )
 def add_charts(pathname, period):
     print(period)
@@ -144,7 +150,100 @@ def add_charts(pathname, period):
     print('nao foi')
     return []
 
-app.name = 'Dashboard'
+### BALANÇO ###
+@app.callback(
+    Output('balance-chart', 'children'),
+    Input('url', 'pathname'), Input('balance-table', 'derived_virtual_selected_rows')
+)
+def balance_chart(url, idx):
+    print('idx', idx)
+    if url == '/balanco':
+        print('======= balance_chart')
+        # field = 'A T I V O'
+        periodos = ['s1_2020', 's2_2020', 's1_2021', 's2_2021', 's1_2022', 's2_2022']
+
+        y_plot = []
+        for p in periodos:
+            local_data = pd.read_csv(f'assets/balan_{p}.csv')
+            if len(idx) == 0:
+                field = 'A T I V O'
+            else:
+                field = local_data['nome_conta'].loc[idx[0]]
+            y = local_data.loc[local_data['nome_conta'] == field]['saldo_atual'].values[0]
+            y_plot.append(y)
+            
+        fig = go.Figure()
+        color = 'rgba(50, 171, 96, 0.6)'
+        line_color = 'rgba(50, 171, 96, 1.0)'
+
+        fig.add_trace(
+            go.Scatter(
+                y=y_plot,
+                marker={'color': '#f43b47'},
+                showlegend=False
+            )
+        )
+
+        fig.add_trace(
+            go.Bar(
+                y=y_plot,
+                showlegend=False,
+                marker={
+                    'line': {
+                        'width':1,
+                        'color': line_color,
+                        },
+                    'color': color
+                },
+            )
+        )
+
+        fig.update_layout( 
+            margin=dict(t=0, l=0, r=0),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+        )
+
+        return dbc.Card(
+                    style={ 'width': '80%', 
+                            'height': '350px', 
+                    #         'margin-left': '10px', 
+                    #         'margin-bottom': '20px', 
+                            'padding': '8px',
+                            'vertical-align': 'text-top'
+                            },
+                    className = 'shadow-sm',
+                    children=[
+                        html.H6(field),
+                        dcc.Graph(
+                            # className='four columns', 
+                            style={'max-height': '349px'} ,
+                            figure=fig
+                        ),
+                    ]
+                )
+
+    return {}
+
+
+@app.callback(
+    Output('balance-table', 'data'), 
+    State('url', 'pathname'), Input('balance-semester-dropdown', 'value')
+)
+def balance_table(url, sem):
+    year = 2020
+    print('called')
+    if url == '/balanco':
+        print('fooi')
+        balan_table = pd.read_csv(f'assets/balan_{sem}_{year}.csv', index_col=[0])
+        balan_table['saldo_atual'] = round(balan_table['saldo_atual'], 2)
+        balan_table = balan_table[['nome_conta', 'saldo_ant', 'deb', 'cred', 'saldo_atual']]
+        return balan_table.to_dict('records')#, html.H6(f'Tabela - período:{year} - Semestre {sem}')
+
+    return {}
+
+
+app.name = 'Fluid.BI'
 
 
 if __name__ == '__main__':
