@@ -1,17 +1,17 @@
 from dash import Dash, dash_table, html, dcc, Output, Input, State
 import dash_bootstrap_components as dbc
-from sidebar import sidebar
 from plotly import express as px, graph_objects as go
-from dre import dre
 import pandas as pd, numpy as np
+
+from dre import dre
+from sidebar import sidebar
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP])
 
 CONTENT_STYLE = {
     "margin-left": "14rem",
-    "width": "100%"
+    "width": "100%",
 }
-
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False), 
