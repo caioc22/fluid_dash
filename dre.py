@@ -14,7 +14,7 @@ dre = html.Div(
             children = [
                     html.H3(
                         style={'font-family': 'Helvetica', 'color': '#0d6efd'},
-                        children='Demonstração de Resultados de Exercício 2022'
+                        children='DRE'
                         ),
                     dcc.Dropdown(
                         options=['2021', '2022'], 

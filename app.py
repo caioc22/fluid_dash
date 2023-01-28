@@ -2,7 +2,7 @@ from dash import Dash, dash_table, html, dcc, Output, Input, State
 import dash_bootstrap_components as dbc
 from sidebar import sidebar
 from plotly import express as px, graph_objects as go
-from dre import dre, data
+from dre import dre
 import pandas as pd, numpy as np
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP])
