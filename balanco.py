@@ -16,21 +16,16 @@ balanco = html.Div(
                         style={'font-family': 'Helvetica', 'color': '#0d6efd'},
                         children='Balanço Patrimonial'
                         ),
+                    # adicionar label
                     dcc.Dropdown(
                         options=[
-                            {'label': 'Semestre 1', 'value': 's1'},
-                            {'label': 'Semestre 2', 'value': 's2'}
+                            {'label': 'Semestral', 'value': 'sem'},
+                            {'label': 'Anual', 'value': 'year'}
                         ], 
                         value='s1', 
-                        id='balance-semester-dropdown', 
+                        id='balance-period-dropdown', 
                         style={"max-width": "200px"}
                     ),
-                    dcc.Dropdown(
-                        options=['2020', '2021', '2022'], 
-                        value='s1', 
-                        id='balance-year-dropdown', 
-                        style={"max-width": "200px"}
-                    )
         ]),
 
         # dcc.Loading(
@@ -43,8 +38,28 @@ balanco = html.Div(
             style={'margin-top': '20px'},
             children=[
                 dbc.Row(
-                    id='balance-chart',
-                    style={'width': '100%'}
+                    style={'width': '100%'},
+                    children=[
+                        
+                        dbc.Card(
+                            style={ 'width': '80%', 
+                                    'height': '350px', 
+                            #         'margin-left': '10px', 
+                            #         'margin-bottom': '20px', 
+                                    'padding': '8px',
+                                    'vertical-align': 'text-top'
+                                    },
+                            className = 'shadow-sm',
+                            children=[
+                                html.H6(id='balance-chart-title'),
+                                dcc.Graph(
+                                    id='balance-chart',
+                                    style={'max-height': '349px'}
+                                ),
+                            ]
+                        )
+
+                    ]
                 )
             ]
         ),

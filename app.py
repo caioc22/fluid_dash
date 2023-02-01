@@ -152,15 +152,21 @@ def add_charts(pathname, period):
 
 ### BALANÇO ###
 @app.callback(
-    Output('balance-chart', 'children'),
-    Input('url', 'pathname'), Input('balance-table', 'derived_virtual_selected_rows')
+    Output('balance-chart', 'figure'), Output('balance-chart-title', 'children'),
+    Input('url', 'pathname'), 
+    Input('balance-table', 'derived_virtual_selected_rows'),
+    # Input('balance-period-dropdown', 'value'),
 )
-def balance_chart(url, idx):
+def update_balance_chart(url, idx):
     print('idx', idx)
+    
     if url == '/balanco':
         print('======= balance_chart')
-        # field = 'A T I V O'
+        
+        # if interval == 'sem':
         periodos = ['s1_2020', 's2_2020', 's1_2021', 's2_2021', 's1_2022', 's2_2022']
+        # elif interval == 'year':
+        #     periodos = ['s1_2020', 's2_2020', 's1_2021', 's2_2021', 's1_2022', 's2_2022']
 
         y_plot = []
         for p in periodos:
@@ -178,6 +184,7 @@ def balance_chart(url, idx):
 
         fig.add_trace(
             go.Scatter(
+                x=periodos,
                 y=y_plot,
                 marker={'color': '#f43b47'},
                 showlegend=False
@@ -186,6 +193,7 @@ def balance_chart(url, idx):
 
         fig.add_trace(
             go.Bar(
+                x=periodos,
                 y=y_plot,
                 showlegend=False,
                 marker={
@@ -204,40 +212,32 @@ def balance_chart(url, idx):
             plot_bgcolor='rgba(0,0,0,0)',
         )
 
-        return dbc.Card(
-                    style={ 'width': '80%', 
-                            'height': '350px', 
-                    #         'margin-left': '10px', 
-                    #         'margin-bottom': '20px', 
-                            'padding': '8px',
-                            'vertical-align': 'text-top'
-                            },
-                    className = 'shadow-sm',
-                    children=[
-                        html.H6(field),
-                        dcc.Graph(
-                            # className='four columns', 
-                            style={'max-height': '349px'} ,
-                            figure=fig
-                        ),
-                    ]
-                )
+        return fig, field
 
     return {}
 
 
 @app.callback(
     Output('balance-table', 'data'), 
-    State('url', 'pathname'), Input('balance-semester-dropdown', 'value')
+    State('url', 'pathname'), 
+    Input('balance-chart', 'clickData')
 )
-def balance_table(url, sem):
-    year = 2020
-    print('called')
+def update_balance_table(url, click):
+    print('called', click)
+    label = click['points'][0]['label'] if click is not None else 's1_2020'
     if url == '/balanco':
-        print('fooi')
-        balan_table = pd.read_csv(f'assets/balan_{sem}_{year}.csv', index_col=[0])
+        print('foi')
+        balan_table = pd.read_csv(f'assets/balan_{label}.csv', index_col=[0])
         balan_table['saldo_atual'] = round(balan_table['saldo_atual'], 2)
-        balan_table = balan_table[['nome_conta', 'saldo_ant', 'deb', 'cred', 'saldo_atual']]
+        balan_table = balan_table[['nome_conta', 'saldo_ant', 'saldo_atual']]
+
+        def horizontal_rate(x):
+            if x['saldo_ant'] != 0:
+                return round(((x['saldo_ant'] - x['saldo_atual']) / x['saldo_ant'] )*100, 2)
+            return np.nan
+
+        balan_table['%'] = balan_table.apply(horizontal_rate, axis=1)
+        balan_table.columns = ['conta', 'saldo anterior', 'saldo atual', '%']
         return balan_table.to_dict('records')#, html.H6(f'Tabela - período:{year} - Semestre {sem}')
 
     return {}
