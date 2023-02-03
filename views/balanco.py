@@ -9,23 +9,29 @@ balanco = html.Div(
     children=[
     
         dbc.Container(
-            className='row',
-            style={'margin-top': '20px'},
+            class_name='row',
+            style={'margin-top': '20px', 'width': '100%'},
             children = [
-                    html.H3(
-                        style={'font-family': 'Helvetica', 'color': '#0d6efd'},
-                        children='Balanço Patrimonial'
-                        ),
-                    # adicionar label
-                    dcc.Dropdown(
-                        options=[
-                            {'label': 'Semestral', 'value': 'sem'},
-                            {'label': 'Anual', 'value': 'year'}
-                        ], 
-                        value='s1', 
-                        id='balance-period-dropdown', 
-                        style={"max-width": "200px"}
+                html.H3(
+                    style={'font-family': 'Helvetica', 'color': '#0d6efd'},
+                    children='Balanço Patrimonial'
                     ),
+                # adicionar label
+                html.Div(
+                    className='row',
+                    children=[
+                        html.H6('Filtro'),
+                        dcc.Dropdown(
+                            options=[
+                                {'label': 'Semestral', 'value': 'sem'},
+                                {'label': 'Anual', 'value': 'year'}
+                            ], 
+                            value='s1', 
+                            id='balance-period-dropdown', 
+                            style={"max-width": "200px"}
+                        ),
+                    ]
+                )
         ]),
 
         # dcc.Loading(
@@ -63,17 +69,28 @@ balanco = html.Div(
                 )
             ]
         ),
-        
+
         html.Div(
             children=[
                 html.Br(),
-                html.Div(id='table-tile'),
-                dash_table.DataTable(
-                    id='balance-table',
-                    row_selectable='single',
-                    page_size=10,
-                    page_action='none',
-                    style_table={'height': '400px', 'overflowY': 'auto', 'width': '80%'}
+                # html.Div(id='table-tile'),
+                html.H6(id='selected-period-title', children=['foo']),
+
+                    
+                    dash_table.DataTable(
+                        id='balance-table',
+                        row_selectable='single',
+                        page_size=10,
+                        page_action='none',
+                        fixed_rows={'headers': True},
+                        style_table={'height': '350px', 'overflowY': 'auto', 'width': '80%'},
+                        style_cell_conditional=[
+                            {
+                                'if': {'column_id': 'conta'},
+                                'textAlign': 'left'
+                            }
+                        ]
+
                 )
             ]
         )
