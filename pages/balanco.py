@@ -1,38 +1,29 @@
-import dash
 import dash_bootstrap_components as dbc
 from dash import html, dcc, dash_table#, Output, Input, State
 # import dash_bootstrap_components as dbc
 import pandas as pd
 
+from .topbar import topbar
+
 balanco = html.Div(
     style={'width': '100%'},
     children=[
     
-        dbc.Container(
-            class_name='row',
-            style={'margin-top': '20px', 'width': '100%'},
-            children = [
-                html.H3(
-                    style={'font-family': 'Helvetica', 'color': '#0d6efd'},
-                    children='Balanço Patrimonial'
-                    ),
-                # adicionar label
-                html.Div(
-                    className='row',
-                    children=[
-                        html.H6('Filtro'),
-                        dcc.Dropdown(
-                            options=[
-                                {'label': 'Semestral', 'value': 'sem'},
-                                {'label': 'Anual', 'value': 'year'}
-                            ], 
-                            value='s1', 
-                            id='balance-period-dropdown', 
-                            style={"max-width": "200px"}
-                        ),
-                    ]
-                )
-        ]),
+### FILTERS ###
+        dbc.Row(
+            children=[
+                html.H6('Filtro'),
+                dcc.Dropdown(
+                    options=[
+                        {'label': 'Semestral', 'value': 'sem'},
+                        {'label': 'Anual', 'value': 'year'}
+                    ], 
+                    value='s1', 
+                    id='balance-period-dropdown', 
+                    style={"max-width": "200px"}
+                ),
+            ]
+        ),
 
         # dcc.Loading(
         #     children=[
@@ -74,7 +65,7 @@ balanco = html.Div(
             children=[
                 html.Br(),
                 # html.Div(id='table-tile'),
-                html.H6(id='selected-period-title', children=['foo']),
+                html.H6(id='selected-period-title', children=[]),
 
                     
                     dash_table.DataTable(
@@ -82,7 +73,7 @@ balanco = html.Div(
                         row_selectable='single',
                         page_size=10,
                         page_action='none',
-                        fixed_rows={'headers': True},
+                        # fixed_rows={'headers': True},
                         style_table={'height': '350px', 'overflowY': 'auto', 'width': '80%'},
                         style_cell_conditional=[
                             {

@@ -1,3 +1,4 @@
+# https://dash-bootstrap-components.opensource.faculty.ai/examples/simple-sidebar/
 from dash import html
 import dash_bootstrap_components as dbc
 
@@ -9,19 +10,12 @@ SIDEBAR_STYLE = {
     "bottom": 0,
     "width": "12rem",
     "padding": "2rem 1rem",
-    # "background-color": "#f8f9fa",
     "background-color": "#1284C3"
+    # "background-color": "#f8f9fa",
     # "background": "linear-gradient(135deg, rgba(18,131,195,1) 0%, rgba(18,131,195,1) 34%, rgba(255,255,255,0) 100%)"
 }
-
 NAV_LINK_STYLE = "row link-light"
-
 RESIZE_LOGO = 30
-# blue => #1284C3
-# shalow-gray => #f8f9fa
-
-# the styles for the main content position it to the right of the sidebar and
-# add some padding.
 
 sidebar = html.Div(
     [

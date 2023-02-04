@@ -1,51 +1,17 @@
-from dash import Input, Output, State, html, dcc
 import dash_bootstrap_components as dbc
 from plotly import express as px, graph_objects as go
-import pandas as pd, numpy as np
+import pandas as pd, numpy as np, re
 
-from app import app
+from index import *
 
-from views.dre import dre
-from views.balanco import balanco
-# https://dash-bootstrap-components.opensource.faculty.ai/examples/simple-sidebar/
-
-
-#===> RENDER PAGES
-@app.callback(
-    Output("page-content", "children"), 
-    Input("url", "pathname")
-)
-def render_page_content(pathname):
-    print(pathname)
-
-    if pathname == "/":
-        return "This is Home page!"
-
-    elif pathname == "/indicadores":
-        return 'Indicadores'
-
-    elif pathname == "/balanco":
-        return balanco
-
-    elif pathname == "/dre":
-        return dre
-        
-    # If the user tries to reach a different page, return a 404 message
-    return html.Div(
-        [
-            html.H1("404: Not found", className="text-danger"),
-            html.Hr(),
-            html.P(f"The pathname {pathname} was not recognised..."),
-        ],
-        className="p-3 bg-light rounded-3",
-    )
+from utils.kpis import *
 
 ### DRE ###
 @app.callback(
     Output('dre-charts', 'children'),
     State('url', 'pathname'), Input('dre-period-dropdown', 'value')
 )
-def add_charts(pathname, period):
+def dre_add_charts(pathname, period):
     print(period)
     if pathname == "/dre":
         columns = []
@@ -136,6 +102,7 @@ def add_charts(pathname, period):
 
     print('nao foi')
     return []
+
 
 ### BALANÇO ###
 @app.callback(
@@ -243,4 +210,69 @@ def update_balance_table(url, click):
     return {}
 
 
-##### INDICADORES ######
+### INDICADORES ####
+@app.callback(
+    Output('kpi-1', 'children'), Output('kpi-1-rate', 'children'),
+    
+    Input('url', 'pathname'), 
+    Input('indicador-ano-dropdown', 'value'),
+    Input('indicador-mes-dropdown', 'value'),
+    Input('kpi-1-dropdown', 'value'),
+)
+def update_kpis(url, ano, mes, kpi1):
+    meses = [
+        'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
+        'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
+    ]
+    
+    if url == '/indicadores':
+        conta = 'LUCRO BRUTO'
+
+        data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
+        
+        current_value = data.loc[data['conta'].str.contains(conta)][mes].values[0]
+        
+        mes_idx = meses.index(mes)
+        last_mes = meses[mes_idx-1] if mes_idx != 1 else 11
+        last_value = data.loc[data['conta'].str.contains(conta)][last_mes].values[0]
+        
+        rate = round(((current_value/last_value)-1)*100 , 2)
+
+        return current_value, f'{rate}%'
+        
+
+@app.callback(
+    Output('main-chart', 'figure'), Output('main-chart-title', 'children'),
+    
+    Input('url', 'pathname'), 
+    Input('indicador-ano-dropdown', 'value'),
+    Input('indicador-mes-dropdown', 'value'),
+    Input('kpi-1-dropdown', 'value'),
+)
+def update_main_chart(url, ano, mes, chart):
+    meses = [
+        'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
+        'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
+    ]
+    
+    if url == '/indicadores':
+        conta = 'LUCRO BRUTO'
+
+        data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
+        
+        plot = data.loc[data['conta'].str.contains('LUCRO BRUTO')][meses].T
+
+        fig = go.Figure(
+            data=go.Scatter(
+                x=plot.index, 
+                y=plot.iloc[:, 0], 
+                mode='lines')
+            )
+
+        fig.update_layout( 
+                margin=dict(t=0, l=0, r=0),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+            )
+        
+        return fig, conta
