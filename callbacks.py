@@ -6,6 +6,13 @@ from index import *
 
 from utils.kpis import *
 
+
+meses = [
+    'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
+    'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
+]
+
+
 ### DRE ###
 @app.callback(
     Output('dre-charts', 'children'),
@@ -210,35 +217,41 @@ def update_balance_table(url, click):
     return {}
 
 
-### INDICADORES ####
+##### INDICADORES #####
 @app.callback(
-    Output('kpi-1', 'children'), Output('kpi-1-rate', 'children'),
+    Output('kpi-1', 'children'), Output('kpi-1-rate', 'children'), Output('kpi-1-title', 'children'),
     
+    Output('kpi-2', 'children'), Output('kpi-2-rate', 'children'), Output('kpi-2-title', 'children'),
+
     Input('url', 'pathname'), 
     Input('indicador-ano-dropdown', 'value'),
     Input('indicador-mes-dropdown', 'value'),
-    Input('kpi-1-dropdown', 'value'),
 )
-def update_kpis(url, ano, mes, kpi1):
-    meses = [
-        'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
-        'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
-    ]
+def update_kpis(url, ano, mes):
     
     if url == '/indicadores':
-        conta = 'LUCRO BRUTO'
+        title_regex = {
+            'LUCRO LIQUIDO': 'LIQUIDO', 
+            'RECEITA BRUTA': 'BRUTA'
+            }
 
-        data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
-        
-        current_value = data.loc[data['conta'].str.contains(conta)][mes].values[0]
-        
-        mes_idx = meses.index(mes)
-        last_mes = meses[mes_idx-1] if mes_idx != 1 else 11
-        last_value = data.loc[data['conta'].str.contains(conta)][last_mes].values[0]
-        
-        rate = round(((current_value/last_value)-1)*100 , 2)
+        values = []; rates = []; titles = [];
+        for title in title_regex:
+            regex = title_regex[title]
 
-        return current_value, f'{rate}%'
+            data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
+            
+            current_value = data.loc[data['conta'].str.contains(regex)][mes].values[0]
+            
+            mes_idx = meses.index(mes)
+            last_mes = meses[mes_idx-1] if mes_idx != 1 else meses[-1]
+            last_value = data.loc[data['conta'].str.contains(regex)][last_mes].values[0]
+            
+            rate = round(((current_value/last_value)-1)*100 , 2)
+            
+            titles.append(title); values.append(current_value); rates.append(rate)
+
+        return values[0], f'{rates[0]}%', titles[0], values[1], f'{rates[1]}%', titles[1]
         
 
 @app.callback(
@@ -247,32 +260,30 @@ def update_kpis(url, ano, mes, kpi1):
     Input('url', 'pathname'), 
     Input('indicador-ano-dropdown', 'value'),
     Input('indicador-mes-dropdown', 'value'),
-    Input('kpi-1-dropdown', 'value'),
 )
-def update_main_chart(url, ano, mes, chart):
-    meses = [
-        'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
-        'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
-    ]
+def update_main_chart(url, ano, mes):
     
     if url == '/indicadores':
-        conta = 'LUCRO BRUTO'
+        regex = 'LIQUIDO'
 
         data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
         
-        plot = data.loc[data['conta'].str.contains('LUCRO BRUTO')][meses].T
+        plot = data.loc[data['conta'].str.contains(regex)][meses].T
 
         fig = go.Figure(
             data=go.Scatter(
                 x=plot.index, 
                 y=plot.iloc[:, 0], 
-                mode='lines')
+                mode='lines+markers',
+                line=dict(color="#ffb700")
+                ),
             )
 
         fig.update_layout( 
-                margin=dict(t=0, l=0, r=0),
+                margin=dict(t=8, l=0, r=0, b=5),
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
             )
         
-        return fig, conta
+        titulo = 'LUCRO LIQUIDO'
+        return fig, titulo

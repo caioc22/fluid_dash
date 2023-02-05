@@ -46,16 +46,7 @@ indicadores = html.Div(
                                 className=CARD_CLASS,
                                 children=[
 
-                                    dcc.Dropdown(
-                                        style={'width': '50px'},
-                                        options=[
-                                            {'label': 'Semestral', 'value': 'sem'},
-                                            {'label': 'Anual', 'value': 'year'}
-                                        ], 
-                                        value='s1', 
-                                        id='kpi-1-dropdown', 
-                                    ),
-
+                                    html.P(id='kpi-1-title', children=[]),
                                     html.H1(id='kpi-1', style={'align-self': 'center'}, children=[]),
                                     html.H6(id='kpi-1-rate', style={'align-self': 'end'}, children=[])
                                 
@@ -64,41 +55,19 @@ indicadores = html.Div(
                         ]),
                         
                         dbc.Col([
-
                             dbc.Card(
-                                id='kpi-2',
-                                children=['foo']
+                                style=CARD_STYLE,
+                                className=CARD_CLASS,
+                                children=[
+
+                                    html.P(id='kpi-2-title', children=[]),
+                                    html.H1(id='kpi-2', style={'align-self': 'center'}, children=[]),
+                                    html.H6(id='kpi-2-rate', style={'align-self': 'end'}, children=[])
+                                
+                                ]
                             ),
-                        
                         ]),
                         
-                        dbc.Col([
-
-                            dbc.Card(
-                                id='kpi-3',
-                                children=['foo']
-                            ),
-                        
-                        ]),
-                        
-                        dbc.Col([
-
-                            dbc.Card(
-                                id='kpi-4',
-                                children=['foo']
-                            ),
-                        
-                        ]),
-                        
-                        dbc.Col([
-
-                            dbc.Card(
-                                id='kpi-5',
-                                children=['foo']
-                            ),
-                        
-                        ]),
-
                     ]
                 ),
 
@@ -122,12 +91,14 @@ indicadores = html.Div(
                             className='col-9',
                             children=[
                                 dbc.Card(
-                                    style={"padding": "10px"},
+                                    className=CARD_CLASS,
+                                    style={"padding": "16px"},
                                     children=[
                                         
                                         html.H5(id='main-chart-title'),
                                         dcc.Graph(
                                             id='main-chart',
+                                            # style={'max-height': '300px'}
                                         )
 
                                     ]
