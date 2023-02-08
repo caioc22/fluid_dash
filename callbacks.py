@@ -220,8 +220,9 @@ def update_balance_table(url, click):
 ##### INDICADORES #####
 @app.callback(
     Output('kpi-1', 'children'), Output('kpi-1-rate', 'children'), Output('kpi-1-title', 'children'),
-    
     Output('kpi-2', 'children'), Output('kpi-2-rate', 'children'), Output('kpi-2-title', 'children'),
+    Output('kpi-3', 'children'), Output('kpi-3-rate', 'children'), Output('kpi-3-title', 'children'),
+    Output('kpi-4', 'children'), Output('kpi-4-rate', 'children'), Output('kpi-4-title', 'children'),
 
     Input('url', 'pathname'), 
     Input('indicador-ano-dropdown', 'value'),
@@ -230,28 +231,66 @@ def update_balance_table(url, click):
 def update_kpis(url, ano, mes):
     
     if url == '/indicadores':
-        title_regex = {
+        metrics = {
             'LUCRO LIQUIDO': 'LIQUIDO', 
-            'RECEITA BRUTA': 'BRUTA'
+            'RECEITA BRUTA': 'BRUTA',
+            'MARGEM LIQUIDA': ' ',
+            'MARGEM BRUTA': ' '
             }
 
         values = []; rates = []; titles = [];
-        for title in title_regex:
-            regex = title_regex[title]
-
+        for metric in metrics:
             data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
-            
-            current_value = data.loc[data['conta'].str.contains(regex)][mes].values[0]
-            
-            mes_idx = meses.index(mes)
-            last_mes = meses[mes_idx-1] if mes_idx != 1 else meses[-1]
-            last_value = data.loc[data['conta'].str.contains(regex)][last_mes].values[0]
-            
-            rate = round(((current_value/last_value)-1)*100 , 2)
-            
-            titles.append(title); values.append(current_value); rates.append(rate)
 
-        return values[0], f'{rates[0]}%', titles[0], values[1], f'{rates[1]}%', titles[1]
+            if metric == 'MARGEM LIQUIDA':
+                luc_liq = data.loc[data['conta'].str.contains('LIQUIDO')][mes].values[0]
+                rec_liq = data.loc[data['conta'].str.contains('LIQUIDA')][mes].values[0]
+                margem_liq = round((luc_liq / rec_liq) * 100, 2)
+
+                # referenciar ano passado
+                last_mes = meses[mes_idx-1] if mes_idx != 1 else meses[-1]
+
+                last_luc_liq = data.loc[data['conta'].str.contains('LIQUIDO')][last_mes].values[0]
+                last_rec_liq = data.loc[data['conta'].str.contains('LIQUIDA')][last_mes].values[0]
+                last_margem_liq = round((last_luc_liq / last_rec_liq) * 100, 2)
+                rate = round(((margem_liq/last_margem_liq)-1)*100 , 2)
+
+                titles.append(metric); values.append(margem_liq); rates.append(rate)
+
+            elif metric == 'MARGEM BRUTA':
+                rec_liq = data.loc[data['conta'].str.contains('LIQUIDA')][mes].values[0]
+                rec_bru = data.loc[data['conta'].str.contains('BRUTA')][mes].values[0]
+                margem_bru = round((rec_liq / rec_bru) * 100, 2)
+
+                last_mes = meses[mes_idx-1] if mes_idx != 1 else meses[-1]
+
+                last_rec_liq = data.loc[data['conta'].str.contains('LIQUIDA')][last_mes].values[0]
+                last_rec_bru = data.loc[data['conta'].str.contains('BRUTA')][last_mes].values[0]
+                last_margem_bru = round((last_rec_liq / last_rec_bru) * 100, 2)
+                rate = round(((margem_bru/last_margem_bru)-1)*100 , 2)
+
+                titles.append(metric); values.append(margem_bru); rates.append(rate)
+
+            # Metricas do DRE (nao compostas)
+            else:
+                regex = metrics[metric]
+                
+                current_value = data.loc[data['conta'].str.contains(regex)][mes].values[0]
+                
+                mes_idx = meses.index(mes)
+                last_mes = meses[mes_idx-1] if mes_idx != 1 else meses[-1]
+                last_value = data.loc[data['conta'].str.contains(regex)][last_mes].values[0]
+                
+                rate = round(((current_value/last_value)-1)*100 , 2)
+                
+                titles.append(metric); values.append(current_value); rates.append(rate)
+
+        return (
+            values[0], f'{rates[0]}%', titles[0], 
+            values[1], f'{rates[1]}%', titles[1],
+            f'{values[2]}%', f'{rates[2]}%', titles[2],
+            f'{values[3]}%', f'{rates[3]}%', titles[3],
+        )
         
 
 @app.callback(
@@ -287,3 +326,45 @@ def update_main_chart(url, ano, mes):
         
         titulo = 'LUCRO LIQUIDO'
         return fig, titulo
+
+
+# @app.callback(
+#     Output('velocimeter', 'figure'),
+#     Input('url', 'pathname'), Input('indicador-ano-dropdown', 'value')
+# )
+def velocimeter(url, year):
+    
+    if url == '/indicadores':
+        fig = go.Figure(
+                go.Indicator(
+                    mode = "gauge+number+delta",
+                    value = 75,
+                    domain = {'x': [0, 1], 'y': [0, 1]},
+                    title = {'text': "Performance", 'font': {'size': 16}},
+                    delta = {'reference': 70, 'increasing': {'color': "green"}},
+                    gauge = {
+                        'axis': {'range': [None, 100], 'tickwidth': 1},
+                        'bar': {'color': "blue"},
+                        'bgcolor': "white",
+                        # 'borderwidth': 2,
+                        # 'bordercolor': "gray",
+                        'steps': [
+                            {'range': [0, 30], 'color': 'red'},
+                            {'range': [30, 70], 'color': 'yellow'},
+                            {'range': [70, 100], 'color': 'green'}
+                            ],
+                        'threshold': {
+                            'line': {'color': "cyan", 'width': 4},
+                            'thickness': 0.75,
+                            'value': 75
+                            }
+                        }
+                    )
+                )
+
+        fig.update_layout(
+            paper_bgcolor="lavender",
+            font={'color': "darkblue", 'family': "Arial"}
+            )
+
+        return fig

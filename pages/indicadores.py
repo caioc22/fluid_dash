@@ -1,5 +1,6 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc, dash_table#, Output, Input, State
+import dash_daq as daq
 # import dash_bootstrap_components as dbc
 import pandas as pd
 
@@ -68,27 +69,83 @@ indicadores = html.Div(
                             ),
                         ]),
                         
+                        dbc.Col([
+                            dbc.Card(
+                                style=CARD_STYLE,
+                                className=CARD_CLASS,
+                                children=[
+
+                                    html.P(id='kpi-3-title', children=[]),
+                                    html.H1(id='kpi-3', style={'align-self': 'center'}, children=[]),
+                                    html.H6(id='kpi-3-rate', style={'align-self': 'end'}, children=[])
+                                
+                                ]
+                            ),
+                        ]),
+                        
+                        dbc.Col([
+                            dbc.Card(
+                                style=CARD_STYLE,
+                                className=CARD_CLASS,
+                                children=[
+
+                                    html.P(id='kpi-4-title', children=[]),
+                                    html.H1(id='kpi-4', style={'align-self': 'center'}, children=[]),
+                                    html.H6(id='kpi-4-rate', style={'align-self': 'end'}, children=[])
+                                
+                                ]
+                            ),
+                        ]),
+                        
                     ]
                 ),
 
-### Main Charts ###
-                dbc.Row(
+### Circular graphs ###
+                dbc.Col(
+                    className='col-3',
                     style={'margin-top': '20px'},
                     children=[
 
-                        dbc.Col(
-                            className='col-3',
+                        dbc.Row(
                             children=[
                                 dbc.Card(
                                     className= CARD_CLASS,
-                                    id='velocimeter',
-                                    children=['foo']
+                                    style=CARD_STYLE,
+                                    children=[
+
+                                        daq.Gauge(
+                                            id='velocimeter',
+                                            color={"gradient":True,"ranges":{"red":[0,40], "yellow":[40,70],"green":[70,100]}},
+                                            value=80,
+                                            label='Performance',
+                                            max=100,
+                                            min=0,
+                                        )
+
+                                    ]
                                 ),
                             ]
                         ),
                             
-                        dbc.Col(
-                            className='col-9',
+                        dbc.Row(
+                            children=[
+                                dbc.Card(
+                                    className= CARD_CLASS,
+                                    id='rolette',
+                                    children=['foo']
+                                ),
+                            ]
+                        ),
+
+                ]),
+
+### CHARTS ###
+                dbc.Col(
+                    className='col-9',
+                    style={'margin-top': '20px'},
+                    children=[
+                        
+                        dbc.Row(
                             children=[
                                 dbc.Card(
                                     className=CARD_CLASS,
@@ -105,44 +162,34 @@ indicadores = html.Div(
                                 ),
 
                             ]
-                        ),
-
-                ]),
-
-### FOOTER CHARTS ###
-                dbc.Row(
-                    style={'margin-top': '20px'},
-                    children=[
-
-                        dbc.Col(
-                            className='col-2',
-                            children=[
-                                dbc.Card(
-                                    id='kpi-5',
-                                    children=['foo']
-                                ),
-                            ]
-                        ),
+                        ),                        
                             
-                        dbc.Col(
-                            className='col-5',
-                            children=[
-                                dbc.Card(
-                                    id='kpi-5',
-                                    children=['foo']
-                                ),
-                            ]
-                        ),
+                        dbc.Row([
+
+                            dbc.Col(
+                                className='col-6',
+                                children=[
+                                    dbc.Card(
+                                        id='minigraph-1',
+                                        className= CARD_CLASS,
+                                        children=['foo']
+                                    ),
+                                ]
+                            ),
+                            
+                            dbc.Col(
+                                className='col-6',
+                                children=[
+                                    dbc.Card(
+                                        id='minigraph-2',
+                                        className= CARD_CLASS,
+                                        children=['foo']
+                                    ),
+                                ]
+                            ),
+
+                        ])
                         
-                        dbc.Col(
-                            className='col-5',
-                            children=[
-                                dbc.Card(
-                                    id='kpi-5',
-                                    children=['foo']
-                                ),
-                            ]
-                        ),
 
                 ])
 
