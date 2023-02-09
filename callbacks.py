@@ -328,43 +328,117 @@ def update_main_chart(url, ano, mes):
         return fig, titulo
 
 
-# @app.callback(
-#     Output('velocimeter', 'figure'),
-#     Input('url', 'pathname'), Input('indicador-ano-dropdown', 'value')
-# )
+@app.callback(
+    Output('velocimeter', 'value'),
+    Input('url', 'pathname'), Input('indicador-ano-dropdown', 'value')
+)
 def velocimeter(url, year):
     
     if url == '/indicadores':
-        fig = go.Figure(
-                go.Indicator(
-                    mode = "gauge+number+delta",
-                    value = 75,
-                    domain = {'x': [0, 1], 'y': [0, 1]},
-                    title = {'text': "Performance", 'font': {'size': 16}},
-                    delta = {'reference': 70, 'increasing': {'color': "green"}},
-                    gauge = {
-                        'axis': {'range': [None, 100], 'tickwidth': 1},
-                        'bar': {'color': "blue"},
-                        'bgcolor': "white",
-                        # 'borderwidth': 2,
-                        # 'bordercolor': "gray",
-                        'steps': [
-                            {'range': [0, 30], 'color': 'red'},
-                            {'range': [30, 70], 'color': 'yellow'},
-                            {'range': [70, 100], 'color': 'green'}
-                            ],
-                        'threshold': {
-                            'line': {'color': "cyan", 'width': 4},
-                            'thickness': 0.75,
-                            'value': 75
-                            }
-                        }
-                    )
+        # fig = go.Figure(
+        #         go.Indicator(
+        #             mode = "gauge+number+delta",
+        #             value = 75,
+        #             domain = {'x': [0, 1], 'y': [0, 1]},
+        #             title = {'text': "Performance", 'font': {'size': 16}},
+        #             delta = {'reference': 70, 'increasing': {'color': "green"}},
+        #             gauge = {
+        #                 'axis': {'range': [None, 100], 'tickwidth': 1},
+        #                 'bar': {'color': "blue"},
+        #                 'bgcolor': "white",
+        #                 # 'borderwidth': 2,
+        #                 # 'bordercolor': "gray",
+        #                 'steps': [
+        #                     {'range': [0, 30], 'color': 'red'},
+        #                     {'range': [30, 70], 'color': 'yellow'},
+        #                     {'range': [70, 100], 'color': 'green'}
+        #                     ],
+        #                 'threshold': {
+        #                     'line': {'color': "cyan", 'width': 4},
+        #                     'thickness': 0.75,
+        #                     'value': 75
+        #                     }
+        #                 }
+        #             )
+        #         )
+
+        # fig.update_layout(
+        #     paper_bgcolor="lavender",
+        #     font={'color': "darkblue", 'family': "Arial"}
+        #     )
+
+        value = np.random.randint(60, 100)
+
+        return value
+
+
+@app.callback(
+    Output('progress-chart', 'figure'),
+    Input('indicador-ano-dropdown', 'value')
+)
+def progress_chart(year):
+    
+    progress = np.random.randint(70, 100)
+    
+    df = pd.DataFrame({'names' : ['progress',' '],
+                   'values' :  [progress, 100 - progress]})
+
+    fig = px.pie(df, values ='values', hole = 0.6, 
+                color_discrete_sequence = ['orange  ', 'rgba(0,0,0,0)']
                 )
 
-        fig.update_layout(
-            paper_bgcolor="lavender",
-            font={'color': "darkblue", 'family': "Arial"}
-            )
+    fig.update_layout( 
+                margin=dict(t=10, l=10, r=10, b=10),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
 
-        return fig
+                autosize=True,
+                # minreducedwidth=250,
+                # minreducedheight=250,
+                # width=450,
+                # height=450,
+            )
+    
+    fig.data[0].textfont.color = 'white'
+    
+    return fig
+
+
+
+# @app.callback(
+#     Output('progress-chart', 'figure'),
+#     Input('indicador-ano-dropdown', 'value')
+# )
+def update_mini_graphs(year):
+    
+    data = pd.read_csv(f'dre_{year}.csv', index_col=[0])
+
+    field = 'LUCRO LIQUIDO'
+
+    reversed = {}
+    color = 'rgba(50, 171, 96, 0.6)' # green
+    line_color = 'rgba(50, 171, 96, 1.0)'
+    if op == '-':
+        color = 'rgba(245, 39, 39, 0.6)' # red
+        line_color = 'rgba(245, 39, 39, 1.0)'
+        reversed = {'yaxis': {'autorange': 'reversed'}}
+    
+    y = data.loc[data['conta'] == field].iloc[:, 1:]
+    y.drop(columns=['tipo'], inplace=True)
+    y = y.T.iloc[:, 0]
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            x=y.index.values,
+            y=y,
+            marker={
+                'line': {
+                    'width':1,
+                    'color': line_color,
+                    },
+                'color': color
+            },
+            showlegend=False
+        ))

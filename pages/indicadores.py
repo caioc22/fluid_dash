@@ -17,6 +17,7 @@ indicadores = html.Div(
                 dcc.Dropdown(
                     options=['2021', '2022'], 
                     value='2021', 
+                    placeholder='ANO', 
                     id='indicador-ano-dropdown', 
                     style={"max-width": "200px"}
                 ),
@@ -25,7 +26,8 @@ indicadores = html.Div(
                         'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
                         'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
                     ], 
-                    value='JAN', 
+                    value='JAN',
+                    placeholder='MES', 
                     id='indicador-mes-dropdown', 
                     style={"max-width": "200px"}
                 ),
@@ -130,9 +132,14 @@ indicadores = html.Div(
                         dbc.Row(
                             children=[
                                 dbc.Card(
-                                    className= CARD_CLASS,
-                                    id='rolette',
-                                    children=['foo']
+                                    className= f'{CARD_CLASS}',# align-items-center',
+                                    style=CARD_STYLE,
+                                    children=[
+                                        
+                                        html.H6('Meta'),
+                                        dcc.Graph(id='progress-chart')
+
+                                    ]
                                 ),
                             ]
                         ),
@@ -146,6 +153,7 @@ indicadores = html.Div(
                     children=[
                         
                         dbc.Row(
+                            className='g-10',
                             children=[
                                 dbc.Card(
                                     className=CARD_CLASS,
@@ -164,7 +172,9 @@ indicadores = html.Div(
                             ]
                         ),                        
                             
-                        dbc.Row([
+                        dbc.Row(
+                            className='g-0',
+                            children=[
 
                             dbc.Col(
                                 className='col-6',
