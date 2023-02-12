@@ -1,2 +1,10 @@
 /* background-image: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
 */
+@font-face {
+    font-family: “dm-sans;
+    src: url(“fonts/DMsans-Regular.ttf”) format(“truetype”);
+    }
+    
+*, html, body {
+font-family: “dm-sans”;
+}

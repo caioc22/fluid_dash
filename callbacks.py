@@ -241,7 +241,6 @@ def update_kpis(url, ano, mes):
         values = []; rates = []; titles = [];
         for metric in metrics:
             data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
-
             if metric == 'MARGEM LIQUIDA':
                 luc_liq = data.loc[data['conta'].str.contains('LIQUIDO')][mes].values[0]
                 rec_liq = data.loc[data['conta'].str.contains('LIQUIDA')][mes].values[0]
@@ -332,7 +331,7 @@ def update_main_chart(url, ano, mes):
     Output('velocimeter', 'value'),
     Input('url', 'pathname'), Input('indicador-ano-dropdown', 'value')
 )
-def velocimeter(url, year):
+def velocimeter(url, ano):
     
     if url == '/indicadores':
         # fig = go.Figure(
@@ -376,7 +375,7 @@ def velocimeter(url, year):
     Output('progress-chart', 'figure'),
     Input('indicador-ano-dropdown', 'value')
 )
-def progress_chart(year):
+def progress_chart(ano):
     
     progress = np.random.randint(70, 100)
     
@@ -405,26 +404,34 @@ def progress_chart(year):
 
 
 
-# @app.callback(
-#     Output('progress-chart', 'figure'),
-#     Input('indicador-ano-dropdown', 'value')
-# )
-def update_mini_graphs(year):
+@app.callback(
+    Output('minigraph-1', 'figure'),
+    Output('minigraph-2', 'figure'),
+
+    Input('indicador-ano-dropdown', 'value'),
+)
+def update_mini_graphs(ano):
     
-    data = pd.read_csv(f'dre_{year}.csv', index_col=[0])
+    data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
 
     field = 'LUCRO LIQUIDO'
+    regex = 'LIQUIDO'
+
+    y = data.loc[data['conta'].str.contains(regex)]
+    print(y)
+    op = y['tipo'].values[0]
+    print('===> op', op)
+    y = y.iloc[:, -12:]
+    print(y)
 
     reversed = {}
     color = 'rgba(50, 171, 96, 0.6)' # green
     line_color = 'rgba(50, 171, 96, 1.0)'
-    if op == '-':
-        color = 'rgba(245, 39, 39, 0.6)' # red
-        line_color = 'rgba(245, 39, 39, 1.0)'
-        reversed = {'yaxis': {'autorange': 'reversed'}}
+    # if op == '-':
+    #     color = 'rgba(245, 39, 39, 0.6)' # red
+    #     line_color = 'rgba(245, 39, 39, 1.0)'
+    #     reversed = {'yaxis': {'autorange': 'reversed'}}
     
-    y = data.loc[data['conta'] == field].iloc[:, 1:]
-    y.drop(columns=['tipo'], inplace=True)
     y = y.T.iloc[:, 0]
 
     fig = go.Figure()
@@ -440,5 +447,16 @@ def update_mini_graphs(year):
                     },
                 'color': color
             },
-            showlegend=False
+            showlegend=False,
         ))
+
+    fig.update_layout( 
+                margin=dict(t=0, l=0, r=0),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                height=290,
+                autosize=True,
+                **reversed
+            )
+
+    return fig, fig

@@ -4,13 +4,13 @@ import dash_daq as daq
 # import dash_bootstrap_components as dbc
 import pandas as pd
 
-CARD_STYLE = {'padding': '6px'}
+CARD_STYLE = {'padding': '6px', 'margin': '10px'}
 CARD_CLASS = 'shadow-sm rounded-0'
+ROW_CLASS = 'g-0'
 
 indicadores = html.Div(
-    style={'width': '100%'},
+    # style={'width': '100%'},
     children=[
-
 ### FILTERS ###
         dbc.Row(
             children=[
@@ -37,10 +37,11 @@ indicadores = html.Div(
 ###### Content #####
         dbc.Container(
             class_name='row',
-            style={'margin-top': '20px', 'width': '100%'},
+            # style={'margin-top': '20px', 'width': '100%'},
             children = [
 ### KPIs ###
                 dbc.Row(
+                    className=ROW_CLASS,
                     children=[
 
                         dbc.Col([
@@ -105,7 +106,6 @@ indicadores = html.Div(
 ### Circular graphs ###
                 dbc.Col(
                     className='col-3',
-                    style={'margin-top': '20px'},
                     children=[
 
                         dbc.Row(
@@ -149,15 +149,14 @@ indicadores = html.Div(
 ### CHARTS ###
                 dbc.Col(
                     className='col-9',
-                    style={'margin-top': '20px'},
                     children=[
                         
                         dbc.Row(
-                            className='g-10',
+                            className=ROW_CLASS,
                             children=[
                                 dbc.Card(
                                     className=CARD_CLASS,
-                                    style={"padding": "16px"},
+                                    style={**CARD_STYLE, "padding": "16px"},
                                     children=[
                                         
                                         html.H5(id='main-chart-title'),
@@ -173,36 +172,51 @@ indicadores = html.Div(
                         ),                        
                             
                         dbc.Row(
-                            className='g-0',
+                            className=ROW_CLASS,
                             children=[
 
-                            dbc.Col(
-                                className='col-6',
-                                children=[
-                                    dbc.Card(
-                                        id='minigraph-1',
-                                        className= CARD_CLASS,
-                                        children=['foo']
-                                    ),
-                                ]
-                            ),
-                            
-                            dbc.Col(
-                                className='col-6',
-                                children=[
-                                    dbc.Card(
-                                        id='minigraph-2',
-                                        className= CARD_CLASS,
-                                        children=['foo']
-                                    ),
-                                ]
-                            ),
+                                dbc.Col(
+                                    className='col-6',
+                                    children=[
+                                        dbc.Card(
+                                            className= CARD_CLASS,
+                                            style= CARD_STYLE,
+                                            children=[
 
-                        ])
-                        
+                                                dcc.Graph(
+                                                    # className='four columns', 
+                                                    id='minigraph-1',
+                                                    style={'max-height': '249px'} ,
+                                                )
+
+                                            ]
+                                        ),
+                                    ]
+                                ),
+                                
+                                dbc.Col(
+                                    className='col-6',
+                                    children=[
+                                        dbc.Card(
+                                            className= CARD_CLASS,
+                                            style= CARD_STYLE,
+                                            children=[
+
+                                                dcc.Graph(
+                                                    # className='four columns', 
+                                                    id='minigraph-2',
+                                                    style={'max-height': '249px'},
+                                                    config={'responsive': True}
+                                                )
+
+                                            ]
+                                        ),
+                                    ]
+                                ),
+
+                            ])
 
                 ])
-
 
             ]
         )

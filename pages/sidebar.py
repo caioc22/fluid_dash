@@ -10,6 +10,7 @@ SIDEBAR_STYLE = {
     "bottom": 0,
     "width": "12rem",
     "padding": "2rem 1rem",
+    "font-family": "DM sans",
     "background-color": "#1284C3"
     # "background-color": "#f8f9fa",
     # "background": "linear-gradient(135deg, rgba(18,131,195,1) 0%, rgba(18,131,195,1) 34%, rgba(255,255,255,0) 100%)"
