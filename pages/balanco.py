@@ -3,16 +3,22 @@ from dash import html, dcc, dash_table#, Output, Input, State
 # import dash_bootstrap_components as dbc
 import pandas as pd
 
+from static.styles import *
+
 from .topbar import topbar
 
-balanco = html.Div(
+balanco = dbc.Row(
     style={'width': '100%'},
     children=[
     
 ### FILTERS ###
+    dbc.Container(
+        class_name='row',
+        children = [
+
         dbc.Row(
             children=[
-                html.H6('Filtro'),
+                html.H6('Filtro', style=FONT_STYLE),
                 dcc.Dropdown(
                     options=[
                         {'label': 'Semestral', 'value': 'sem'},
@@ -66,7 +72,6 @@ balanco = html.Div(
                 html.Br(),
                 # html.Div(id='table-tile'),
                 html.H6(id='selected-period-title', children=[]),
-
                     
                     dash_table.DataTable(
                         id='balance-table',
@@ -85,6 +90,8 @@ balanco = html.Div(
                 )
             ]
         )
+
+    ])
 
 ])
 

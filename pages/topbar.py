@@ -2,11 +2,12 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 
 topbar = dbc.Row(
-            className='d-flex justify-content-between shadow-sm',
+            className='d-flex shadow-sm',
             style={
                 'margin-top': '20px', 
                 'width': '100%', 
                 'padding': '10px', 
+                'justify-content': 'between'
             },
             children = [
                 dbc.Col([
@@ -16,7 +17,7 @@ topbar = dbc.Row(
                     ),
                 ]),
                 dbc.Col([
-                    html.I(className="bi bi-person-circle"),
+                    html.I(className="bi bi-person-circle", style={'font-size': '24px'}),
                 ])
             ]
         )

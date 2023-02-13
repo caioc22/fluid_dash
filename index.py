@@ -38,12 +38,12 @@ def render_page_content(pathname):
         className="p-3 bg-light rounded-3",
     )
 
-
+# ===> render page title
 @app.callback(
     Output('page-title', 'children'),
     Input('url', 'pathname')
 )
 def update_page_title(url):
     title = url.split('/')[1].capitalize()
-    print(title)
+    title = 'DRE' if title == 'Dre' else title
     return title

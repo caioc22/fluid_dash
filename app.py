@@ -10,23 +10,22 @@ app = Dash(
     external_stylesheets=[
         dbc.themes.BOOTSTRAP, 
         dbc.icons.BOOTSTRAP,
-        # 'https://fonts.googleapis.com/css2?family=Lato&display=swap'
-        'https://fonts.googleapis.com/css2?family=DM+Sans&display=swap'
+        'https://fonts.googleapis.com/css2?family=DM+Sans&display=swap',
     ],
-    meta_tags=[
-        {
-            "name": "viewport",
-            "content": "width=device-width, initial-scale=1, maximum-scale=1",
-        }
-    ],
+    # meta_tags=[
+    #     {
+    #         "name": "viewport",
+    #         "content": "width=device-width, initial-scale=1, maximum-scale=1",
+    #     }
+    # ],
 )
-    # html.Link(href='/assets/custom.css', rel='stylesheet'),
+# html.Link(href='/assets/custom.css', rel='stylesheet'),
 
 app.name = 'Fluid.BI'
 
-
 CONTENT_STYLE = {
     "margin-left": "12rem",
+    'font-family': 'DM sans'
 }
 
 app.layout = html.Div([
@@ -39,7 +38,7 @@ app.layout = html.Div([
             topbar,
             html.Div(
                 id='page-content',
-                style={'padding': '20px'}
+                style={'padding': '10px'}
             )
         ]
     )

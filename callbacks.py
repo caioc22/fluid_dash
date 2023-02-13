@@ -14,11 +14,79 @@ meses = [
 
 
 ### DRE ###
-@app.callback(
-    Output('dre-charts', 'children'),
-    State('url', 'pathname'), Input('dre-period-dropdown', 'value')
-)
-def dre_add_charts(pathname, period):
+
+def create_update_dre_chart_function(i):
+    def update_dre_chart(pathname, period):
+
+        if pathname == "/dre":
+            data = pd.read_csv(f'./assets/dre_{period}.csv', index_col=[0])
+
+            field = data['conta'][i]
+            op = data['tipo'][i]
+
+            reversed = {}
+            color = 'rgba(50, 171, 96, 0.6)' # green
+            line_color = 'rgba(50, 171, 96, 1.0)'
+            if op == '-':
+                color = 'rgba(245, 39, 39, 0.6)' # red
+                line_color = 'rgba(245, 39, 39, 1.0)'
+                reversed = {'yaxis': {'autorange': 'reversed'}}
+            
+            y = data.loc[data['conta'] == field].iloc[:, 1:]
+            y.drop(columns=['tipo'], inplace=True)
+            y = y.T.iloc[:, 0]
+
+            fig = go.Figure()
+
+            fig.add_trace(
+                go.Scatter(
+                    x=y.index.values,
+                    y=y,
+                    marker={'color': '#f43b47'},
+                    showlegend=False
+                ))
+
+            fig.add_trace(
+                go.Bar(
+                    x=y.index.values,
+                    y=y,
+                    marker={
+                        'line': {
+                            'width':1,
+                            'color': line_color,
+                            },
+                        'color': color
+                    },
+                    showlegend=False
+                ))
+            
+            fig.update_layout( 
+                margin=dict(t=0, l=0, r=0),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                **reversed
+            )
+
+            return field, fig
+
+    return update_dre_chart
+
+for i in range(0, 32):
+    app.callback(
+        Output(f'dre-chart-{i+1}-title', 'children'),
+        Output(f'dre-chart-{i+1}', 'figure'),
+
+        State('url', 'pathname'), 
+        Input('dre-period-dropdown', 'value'),
+    )(create_update_dre_chart_function(i))
+
+
+
+# @app.callback(
+#     Output('dre-charts', 'children'),
+#     State('url', 'pathname'), Input('dre-period-dropdown', 'value')
+# )
+def update_dre_charts(pathname, period):
     print(period)
     if pathname == "/dre":
         columns = []
@@ -71,25 +139,7 @@ def dre_add_charts(pathname, period):
                 **reversed
             )
 
-            columns.append(
-                    dbc.Card(
-                        style={ 'width': '28%', 
-                                'height': '250px', 
-                                'margin-left': '10px', 
-                                'margin-bottom': '20px', 
-                                'padding': '8px',
-                                'vertical-align': 'text-top'
-                                },
-                        className = 'shadow-sm',
-                        children=[
-                            html.H6(field),
-                            dcc.Graph(
-                                # className='four columns', 
-                                style={'max-height': '249px'} ,
-                                figure=fig
-                            ),
-                    ])
-                )
+            columns.append(fig)
             
             # if (c+1) == 6:
         return columns
@@ -373,9 +423,10 @@ def velocimeter(url, ano):
 
 @app.callback(
     Output('progress-chart', 'figure'),
-    Input('indicador-ano-dropdown', 'value')
+    Input('indicador-ano-dropdown', 'value'),
+    Input('progress-dropdown', 'value'),
 )
-def progress_chart(ano):
+def progress_chart(ano, field):
     
     progress = np.random.randint(70, 100)
     
@@ -405,8 +456,8 @@ def progress_chart(ano):
 
 
 @app.callback(
-    Output('minigraph-1', 'figure'),
-    Output('minigraph-2', 'figure'),
+    Output('minigraph-1', 'figure'), Output('minigraph-1-title', 'children'),
+    Output('minigraph-2', 'figure'), Output('minigraph-2-title', 'children'),
 
     Input('indicador-ano-dropdown', 'value'),
 )
@@ -459,4 +510,6 @@ def update_mini_graphs(ano):
                 **reversed
             )
 
-    return fig, fig
+    title = field
+    
+    return fig, title, fig, title

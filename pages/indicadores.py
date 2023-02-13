@@ -4,102 +4,66 @@ import dash_daq as daq
 # import dash_bootstrap_components as dbc
 import pandas as pd
 
-CARD_STYLE = {'padding': '6px', 'margin': '10px'}
+from static.styles import *
+
+dre_fields = pd.read_csv('assets/dre_2021.csv')['conta'].values
+print(dre_fields)
+
+CARD_STYLE = {'padding': '10px', 'margin': '10px', 'border': 'None', **FONT_STYLE}
 CARD_CLASS = 'shadow-sm rounded-0'
 ROW_CLASS = 'g-0'
 
-indicadores = html.Div(
-    # style={'width': '100%'},
+indicadores = dbc.Row(
     children=[
-### FILTERS ###
-        dbc.Row(
-            children=[
-                dcc.Dropdown(
-                    options=['2021', '2022'], 
-                    value='2021', 
-                    placeholder='ANO', 
-                    id='indicador-ano-dropdown', 
-                    style={"max-width": "200px"}
-                ),
-                dcc.Dropdown(
-                    options=[
-                        'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
-                        'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
-                    ], 
-                    value='JAN',
-                    placeholder='MES', 
-                    id='indicador-mes-dropdown', 
-                    style={"max-width": "200px"}
-                ),
-            ]
-        ),
-
-###### Content #####
+        
         dbc.Container(
             class_name='row',
             # style={'margin-top': '20px', 'width': '100%'},
             children = [
+
+### FILTERS ###
+                dbc.Row(
+                    children=[
+                        dcc.Dropdown(
+                            className=CARD_CLASS , 
+                            options=['2021', '2022'], 
+                            value='2021', 
+                            placeholder='ANO', 
+                            id='indicador-ano-dropdown', 
+                            style={"max-width": "200px", 'border': 'None', **FONT_STYLE}
+                        ),
+                        dcc.Dropdown(
+                            className=CARD_CLASS , 
+                            options=[
+                                'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
+                                'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
+                            ], 
+                            value='JAN',
+                            placeholder='MES', 
+                            id='indicador-mes-dropdown', 
+                            style={"max-width": "200px", 'border': 'None', **FONT_STYLE}
+                        ),
+                    ]
+                ),
+
+###### Content #####
+
 ### KPIs ###
                 dbc.Row(
                     className=ROW_CLASS,
                     children=[
-
-                        dbc.Col([
-                            dbc.Card(
-                                style=CARD_STYLE,
-                                className=CARD_CLASS,
-                                children=[
-
-                                    html.P(id='kpi-1-title', children=[]),
-                                    html.H1(id='kpi-1', style={'align-self': 'center'}, children=[]),
-                                    html.H6(id='kpi-1-rate', style={'align-self': 'end'}, children=[])
-                                
-                                ]
-                            ),
-                        ]),
-                        
-                        dbc.Col([
-                            dbc.Card(
-                                style=CARD_STYLE,
-                                className=CARD_CLASS,
-                                children=[
-
-                                    html.P(id='kpi-2-title', children=[]),
-                                    html.H1(id='kpi-2', style={'align-self': 'center'}, children=[]),
-                                    html.H6(id='kpi-2-rate', style={'align-self': 'end'}, children=[])
-                                
-                                ]
-                            ),
-                        ]),
-                        
-                        dbc.Col([
-                            dbc.Card(
-                                style=CARD_STYLE,
-                                className=CARD_CLASS,
-                                children=[
-
-                                    html.P(id='kpi-3-title', children=[]),
-                                    html.H1(id='kpi-3', style={'align-self': 'center'}, children=[]),
-                                    html.H6(id='kpi-3-rate', style={'align-self': 'end'}, children=[])
-                                
-                                ]
-                            ),
-                        ]),
-                        
-                        dbc.Col([
-                            dbc.Card(
-                                style=CARD_STYLE,
-                                className=CARD_CLASS,
-                                children=[
-
-                                    html.P(id='kpi-4-title', children=[]),
-                                    html.H1(id='kpi-4', style={'align-self': 'center'}, children=[]),
-                                    html.H6(id='kpi-4-rate', style={'align-self': 'end'}, children=[])
-                                
-                                ]
-                            ),
-                        ]),
-                        
+                            dbc.Col([
+                                dbc.Card(
+                                    style=CARD_STYLE,
+                                    className=CARD_CLASS,
+                                    children=[
+                                        html.P(id=f'kpi-{i}-title', children=[], style=FONT_STYLE),
+                                        html.H1(id=f'kpi-{i}', style={'align-self': 'center', **FONT_STYLE}, children=[]),
+                                        html.H6(id=f'kpi-{i}-rate', style={'align-self': 'end', **FONT_STYLE}, children=[])
+                                    ]
+                                ),
+                            ])
+                            for i in range(1,5)
                     ]
                 ),
 
@@ -114,12 +78,12 @@ indicadores = html.Div(
                                     className= CARD_CLASS,
                                     style=CARD_STYLE,
                                     children=[
-
+                                        html.H6('Performance', style=FONT_STYLE),
                                         daq.Gauge(
                                             id='velocimeter',
                                             color={"gradient":True,"ranges":{"red":[0,40], "yellow":[40,70],"green":[70,100]}},
                                             value=80,
-                                            label='Performance',
+                                            label=' ',
                                             max=100,
                                             min=0,
                                         )
@@ -136,7 +100,17 @@ indicadores = html.Div(
                                     style=CARD_STYLE,
                                     children=[
                                         
-                                        html.H6('Meta'),
+                                        dbc.Row([
+                                            dbc.Col([ html.H6('Meta ', style=FONT_STYLE) ]),
+                                                dcc.Dropdown(
+                                                    className=CARD_CLASS , 
+                                                    options=dre_fields, 
+                                                    value=dre_fields[0], 
+                                                    placeholder='CONTA', 
+                                                    id='progress-dropdown', 
+                                                    style={"max-width": "300px", 'border': 'None', **FONT_STYLE}
+                                                ),
+                                        ]),
                                         dcc.Graph(id='progress-chart')
 
                                     ]
@@ -159,7 +133,7 @@ indicadores = html.Div(
                                     style={**CARD_STYLE, "padding": "16px"},
                                     children=[
                                         
-                                        html.H5(id='main-chart-title'),
+                                        html.H5(id='main-chart-title', style=FONT_STYLE),
                                         dcc.Graph(
                                             id='main-chart',
                                             # style={'max-height': '300px'}
@@ -180,31 +154,12 @@ indicadores = html.Div(
                                     children=[
                                         dbc.Card(
                                             className= CARD_CLASS,
-                                            style= CARD_STYLE,
+                                            style= {'max-height': '280px', **CARD_STYLE},
                                             children=[
-
+                                                html.H6(id=f'minigraph-{i}-title', style=FONT_STYLE),
                                                 dcc.Graph(
                                                     # className='four columns', 
-                                                    id='minigraph-1',
-                                                    style={'max-height': '249px'} ,
-                                                )
-
-                                            ]
-                                        ),
-                                    ]
-                                ),
-                                
-                                dbc.Col(
-                                    className='col-6',
-                                    children=[
-                                        dbc.Card(
-                                            className= CARD_CLASS,
-                                            style= CARD_STYLE,
-                                            children=[
-
-                                                dcc.Graph(
-                                                    # className='four columns', 
-                                                    id='minigraph-2',
+                                                    id=f'minigraph-{i}',
                                                     style={'max-height': '249px'},
                                                     config={'responsive': True}
                                                 )
@@ -212,14 +167,16 @@ indicadores = html.Div(
                                             ]
                                         ),
                                     ]
-                                ),
+                                )
+                                for i in range(1,3)
 
-                            ])
+                            ]
+                        )
 
                 ])
 
             ]
         )
-    
+
     ]
 )
