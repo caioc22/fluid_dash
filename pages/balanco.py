@@ -5,17 +5,21 @@ import pandas as pd
 
 from static.styles import *
 
-from .topbar import topbar
-
 balanco = dbc.Row(
-    style={'width': '100%'},
     children=[
-    
-### FILTERS ###
+
     dbc.Container(
         class_name='row',
-        children = [
+        children=[
+    
+    # dbc.Container(
+    #     children = [
 
+### FILTERS ###
+        dbc.Col(
+            children=[
+                
+            
         dbc.Row(
             children=[
                 html.H6('Filtro', style=FONT_STYLE),
@@ -37,7 +41,8 @@ balanco = dbc.Row(
         #     ]
         # )
 
-        html.Div(
+### CHART ###
+        dbc.Row(
             style={'margin-top': '20px'},
             children=[
                 dbc.Row(
@@ -50,11 +55,12 @@ balanco = dbc.Row(
                             #         'margin-left': '10px', 
                             #         'margin-bottom': '20px', 
                                     'padding': '8px',
-                                    'vertical-align': 'text-top'
+                                    'vertical-align': 'text-top',
+                                    **CARD_STYLE
                                     },
                             className = 'shadow-sm',
                             children=[
-                                html.H6(id='balance-chart-title'),
+                                html.H6(id='balance-chart-title', style=FONT_STYLE),
                                 dcc.Graph(
                                     id='balance-chart',
                                     style={'max-height': '349px'}
@@ -67,33 +73,35 @@ balanco = dbc.Row(
             ]
         ),
 
-        html.Div(
+### TABLE ###
+        dbc.Row(
+            style={'margin-top': '20px'},
             children=[
-                html.Br(),
-                # html.Div(id='table-tile'),
-                html.H6(id='selected-period-title', children=[]),
-                    
-                    dash_table.DataTable(
-                        id='balance-table',
-                        row_selectable='single',
-                        page_size=10,
-                        page_action='none',
-                        # fixed_rows={'headers': True},
-                        style_table={'height': '350px', 'overflowY': 'auto', 'width': '80%'},
-                        style_cell_conditional=[
-                            {
-                                'if': {'column_id': 'conta'},
-                                'textAlign': 'left'
-                            }
-                        ]
+                
+                html.H6(id='selected-period-title', children=[], style=FONT_STYLE),
+                dash_table.DataTable(
+                    id='balance-table',
+                    row_selectable='single',
+                    page_size=10,
+                    page_action='none',
+                    # fixed_rows={'headers': True},
+                    style_table={'height': '350px', 'overflowY': 'auto', 'width': '80%'},
+                    style_cell={**FONT_STYLE},
+                    style_cell_conditional=[
+                        {
+                            'if': {'column_id': 'conta'},
+                            'textAlign': 'left'
+                        }
+                    ]
 
                 )
             ]
         )
 
+        ]
+    )
+    # ])
     ])
 
 ])
-
-
 

@@ -9,8 +9,6 @@ from static.styles import *
 dre_fields = pd.read_csv('assets/dre_2021.csv')['conta'].values
 print(dre_fields)
 
-CARD_STYLE = {'padding': '10px', 'margin': '10px', 'border': 'None', **FONT_STYLE}
-CARD_CLASS = 'shadow-sm rounded-0'
 ROW_CLASS = 'g-0'
 
 indicadores = dbc.Row(

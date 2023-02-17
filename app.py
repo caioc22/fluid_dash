@@ -20,12 +20,11 @@ app = Dash(
     # ],
 )
 # html.Link(href='/assets/custom.css', rel='stylesheet'),
+app.title = 'Fluid.BI'
 
-app.name = 'Fluid.BI'
 
 CONTENT_STYLE = {
     "margin-left": "12rem",
-    'font-family': 'DM sans'
 }
 
 app.layout = html.Div([
@@ -38,7 +37,11 @@ app.layout = html.Div([
             topbar,
             html.Div(
                 id='page-content',
-                style={'padding': '10px'}
+                style={
+                    'padding-top': '10px', 
+                    'padding-left': '20px', 
+                    # 'padding-right': '0px'
+                    }
             )
         ]
     )

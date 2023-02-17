@@ -4,6 +4,7 @@ from app import app
 from pages.dre import dre
 from pages.balanco import balanco
 from pages.indicadores import indicadores
+from pages.dados import dados
 
 #===> RENDER PAGES
 @app.callback(
@@ -26,7 +27,7 @@ def render_page_content(pathname):
         return dre
     
     elif pathname == "/dados":
-        return 'Dados'
+        return dados
         
     # If the user tries to reach a different page, return a 404 message
     return html.Div(
@@ -44,6 +45,13 @@ def render_page_content(pathname):
     Input('url', 'pathname')
 )
 def update_page_title(url):
-    title = url.split('/')[1].capitalize()
-    title = 'DRE' if title == 'Dre' else title
+    titles = {
+        '/indicadores': 'Indicadores',
+        '/balanco': 'Balanço Patrimonial',
+        '/dre': 'Demonstração de Resultados de Exercício',
+        '/dados': 'Dados',
+        }
+    
+    title = titles[url]
+
     return title
