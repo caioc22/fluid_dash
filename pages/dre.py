@@ -8,7 +8,6 @@ from static.styles import *
 from .topbar import topbar
 
 dre = dbc.Row(
-    style={'width': '100%'},
     children=[
     
 ### FILTERS ###
@@ -20,12 +19,13 @@ dre = dbc.Row(
             style={"max-width": "200px"}
         ),
 
-        dbc.Row(
-            style={'margin-top': '20px', 'width': '100%'},
+        dbc.Container(
+            className='row',
+            style={'margin-top': '20px'},
             children=[
 
                 dbc.Card(
-                        style={ 'width': '28%', 
+                        style={ 'width': '30%', 
                                 'height': '250px', 
                                 'margin-left': '10px', 
                                 'margin-bottom': '20px', 

@@ -20,14 +20,17 @@ topbar = dbc.Row(
                     ]
                 ),
                 dbc.Row(
-                    className='col-2 align-items-center ',
-                    style={'justify-content': 'flex-end'},
+                    className='align-items-center justify-content-end',
                     children=[
-                        dbc.Col([ html.H6('Olá, Fulano!', style=FONT_STYLE) ]),
                         dbc.Col([ 
-
-                            html.I(className="bi bi-person-circle", style={'font-size': '30px', 'color': STD_BLUE}) 
-                        ]),
+                            html.H6('Olá, Fulano!', style=FONT_STYLE) 
+                        ], className='col-1'),
+                        dbc.Col([ 
+                            html.I(
+                                className="bi bi-person-circle", 
+                                style={'font-size': '30px', 'color': STD_BLUE}
+                            ) 
+                        ], className='col-1'),
                     ]
                 )
             ]

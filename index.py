@@ -5,6 +5,7 @@ from pages.dre import dre
 from pages.balanco import balanco
 from pages.indicadores import indicadores
 from pages.dados import dados
+from pages.sidebar import *
 
 #===> RENDER PAGES
 @app.callback(
@@ -52,3 +53,18 @@ def update_page_title(url):
     title = titles[url]
 
     return title
+
+
+# ===> Toggle Sidebar
+@app.callback(
+    Output('sidebar', 'children'),
+    Input('toggle-sidebar', 'n_clicks')
+)
+def toggle_sidebar(click):
+    print('toggle', click)
+    if click % 2 == 0:
+        print('toggled')
+        return toggled_sidebar
+
+    return sidebar_full
+    

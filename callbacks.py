@@ -533,5 +533,3 @@ def show_selected_saved_table(row, data):
     df_name = data[row[0]]['nome']
     df_to_load = pd.read_csv(f'data/{df_name}', index_col=[0])
     return df_to_load.to_dict('records'), df_name
-        
-        

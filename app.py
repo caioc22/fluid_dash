@@ -1,9 +1,8 @@
 from dash import Dash, dash_table, html, dcc, Output, Input, State
 import dash_bootstrap_components as dbc
 
-from pages.sidebar import sidebar
 from pages.topbar import topbar
-
+from pages.sidebar import sidebar_full
 
 app = Dash(
     __name__, 
@@ -29,7 +28,9 @@ CONTENT_STYLE = {
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False), 
-    sidebar, 
+    
+    html.Div(id='sidebar', children=[sidebar_full]),
+
     html.Div(
         # id='page-content',
         style=CONTENT_STYLE,

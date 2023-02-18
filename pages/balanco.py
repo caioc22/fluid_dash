@@ -5,6 +5,8 @@ import pandas as pd
 
 from static.styles import *
 
+HEIGHT = 500
+
 balanco = dbc.Row(
     children=[
 
@@ -51,8 +53,8 @@ balanco = dbc.Row(
                         
                         dbc.Card(
                             style={ 
+                                'height': HEIGHT, 
                                 'width': '100%', 
-                                'height': '350px', 
                                 'padding': '8px',
                                 'vertical-align': 'text-top',
                                 **CARD_STYLE
@@ -62,7 +64,7 @@ balanco = dbc.Row(
                                 html.H6(id='balance-chart-title', style=FONT_STYLE),
                                 dcc.Graph(
                                     id='balance-chart',
-                                    style={'max-height': '349px'}
+                                    style={'max-height': HEIGHT-50}
                                 ),
                             ]
                         )
@@ -80,8 +82,8 @@ balanco = dbc.Row(
                 dbc.Card(
                     className=CARD_CLASS,
                     style={ 
+                        'height': HEIGHT, 
                         'width': '100%', 
-                        'height': '350px', 
                         'padding': '8px',
                         'vertical-align': 'text-top',
                         **CARD_STYLE
@@ -98,7 +100,7 @@ balanco = dbc.Row(
                                 page_size=10,
                                 page_action='none',
                                 # fixed_rows={'headers': True},
-                                style_table={'height': '250px', 'overflowY': 'auto', 'width': '100%'},
+                                style_table={'height': HEIGHT-100, 'overflowY': 'auto', 'width': '100%'},
                                 style_cell={**FONT_STYLE},
                                 style_cell_conditional=[
                                     {
