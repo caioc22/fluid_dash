@@ -15,9 +15,6 @@ def render_page_content(pathname):
     print(pathname)
 
     if pathname == "/":
-        return "This is Home page!"
-
-    elif pathname == "/indicadores":
         return indicadores
 
     elif pathname == "/balanco":
@@ -46,7 +43,7 @@ def render_page_content(pathname):
 )
 def update_page_title(url):
     titles = {
-        '/indicadores': 'Indicadores',
+        '/': 'Indicadores',
         '/balanco': 'Balanço Patrimonial',
         '/dre': 'Demonstração de Resultados de Exercício',
         '/dados': 'Dados',

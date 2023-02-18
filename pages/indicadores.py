@@ -6,8 +6,7 @@ import pandas as pd
 
 from static.styles import *
 
-dre_fields = pd.read_csv('assets/dre_2021.csv')['conta'].values
-print(dre_fields)
+dre_fields = pd.read_csv('data/dre_2021.csv')['conta'].values
 
 ROW_CLASS = 'g-0'
 

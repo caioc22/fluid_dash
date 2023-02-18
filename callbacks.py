@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 from plotly import express as px, graph_objects as go
-import pandas as pd, numpy as np, re
+import pandas as pd, numpy as np
+import os, re
 
 from index import *
 
@@ -18,7 +19,7 @@ def create_update_dre_chart_function(i):
     def update_dre_chart(pathname, period):
 
         if pathname == "/dre":
-            data = pd.read_csv(f'./assets/dre_{period}.csv', index_col=[0])
+            data = pd.read_csv(f'./data/dre_{period}.csv', index_col=[0])
 
             field = data['conta'][i]
             op = data['tipo'][i]
@@ -90,7 +91,7 @@ for i in range(0, 32):
 #     if pathname == "/dre":
 #         columns = []
         
-#         data = pd.read_csv(f'./assets/dre_{period}.csv', index_col=[0])
+#         data = pd.read_csv(f'./data/dre_{period}.csv', index_col=[0])
 
 #         for field, op, c in zip( data['conta'], data['tipo'], range(len(data['conta'])) ):
             
@@ -182,7 +183,7 @@ def update_balance_chart(url, idx):
 
         y_plot = []; switch_color = []; switch_line_color = []
         for p in periodos:
-            local_data = pd.read_csv(f'assets/balan_{p}.csv')
+            local_data = pd.read_csv(f'data/balan_{p}.csv')
             
             if len(idx) == 0:
                 field = 'A T I V O'
@@ -250,7 +251,7 @@ def update_balance_table(url, click):
     label = click['points'][0]['label'] if click is not None else 's1_2020'
     if url == '/balanco':
         print('foi')
-        balan_table = pd.read_csv(f'assets/balan_{label}.csv', index_col=[0])
+        balan_table = pd.read_csv(f'data/balan_{label}.csv', index_col=[0])
         balan_table['saldo_atual'] = round(balan_table['saldo_atual'], 2)
         balan_table = balan_table[['nome_conta', 'saldo_ant', 'saldo_atual']]
 
@@ -279,7 +280,7 @@ def update_balance_table(url, click):
 )
 def update_kpis(url, ano, mes):
     
-    if url == '/indicadores':
+    if url == '/':
         metrics = {
             'LUCRO LIQUIDO': 'LIQUIDO', 
             'RECEITA BRUTA': 'BRUTA',
@@ -289,7 +290,7 @@ def update_kpis(url, ano, mes):
 
         values = []; rates = []; titles = [];
         for metric in metrics:
-            data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
+            data = pd.read_csv(f'data/dre_{ano}.csv', index_col=[0])
             if metric == 'MARGEM LIQUIDA':
                 luc_liq = data.loc[data['conta'].str.contains('LIQUIDO')][mes].values[0]
                 rec_liq = data.loc[data['conta'].str.contains('LIQUIDA')][mes].values[0]
@@ -350,10 +351,10 @@ def update_kpis(url, ano, mes):
 )
 def update_main_chart(url, ano, mes):
     
-    if url == '/indicadores':
+    if url == '/':
         regex = 'LIQUIDO'
 
-        data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
+        data = pd.read_csv(f'data/dre_{ano}.csv', index_col=[0])
         
         plot = data.loc[data['conta'].str.contains(regex)][meses].T
 
@@ -382,7 +383,7 @@ def update_main_chart(url, ano, mes):
 )
 def velocimeter(url, ano):
     
-    if url == '/indicadores':
+    if url == '/':
         # fig = go.Figure(
         #         go.Indicator(
         #             mode = "gauge+number+delta",
@@ -462,7 +463,7 @@ def progress_chart(ano, field):
 )
 def update_mini_graphs(ano):
     
-    data = pd.read_csv(f'assets/dre_{ano}.csv', index_col=[0])
+    data = pd.read_csv(f'data/dre_{ano}.csv', index_col=[0])
 
     field = 'LUCRO LIQUIDO'
     regex = 'LIQUIDO'
@@ -509,3 +510,28 @@ def update_mini_graphs(ano):
     title = field
     
     return fig, title, fig, title
+
+
+### DADOS ###
+@app.callback(
+    Output('saved-data-table', 'data'),
+    Input('url', 'pathname'), Input('dados-year-dropdown', 'value')
+)
+def update_saved_data_table(url, ano):
+    if url == '/dados':
+        saved_data = os.listdir('data')
+        df_data = pd.DataFrame(data=saved_data, columns=['nome'])
+        return df_data.to_dict('record')
+
+
+@app.callback(
+    Output('data-table', 'data'), Output('data-table-title', 'children'),
+    Input('saved-data-table', 'selected_rows'), Input('saved-data-table', 'data'),
+)
+def show_selected_saved_table(row, data):
+    row = [0] if row is None else row
+    df_name = data[row[0]]['nome']
+    df_to_load = pd.read_csv(f'data/{df_name}', index_col=[0])
+    return df_to_load.to_dict('records'), df_name
+        
+        

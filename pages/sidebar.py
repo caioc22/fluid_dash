@@ -41,7 +41,7 @@ sidebar = html.Div(
                         html.I(className="bi bi-bar-chart"),
                         "Indicadores"
                     ], 
-                    href="/indicadores", 
+                    href="/", 
                     active="exact"),
                     
                 dbc.NavLink(
