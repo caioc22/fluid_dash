@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from plotly import express as px, graph_objects as go
 import pandas as pd, numpy as np
-import os, re
+import os, re, base64, io
 
 from index import *
 
@@ -520,7 +520,7 @@ def update_mini_graphs(ano):
 def update_saved_data_table(url, ano):
     if url == '/dados':
         saved_data = os.listdir('data')
-        df_data = pd.DataFrame(data=saved_data, columns=['nome'])
+        df_data = pd.DataFrame(data=saved_data, columns=['Nome'])
         return df_data.to_dict('record')
 
 
@@ -530,6 +530,52 @@ def update_saved_data_table(url, ano):
 )
 def show_selected_saved_table(row, data):
     row = [0] if row is None else row
-    df_name = data[row[0]]['nome']
+    df_name = data[row[0]]['Nome']
     df_to_load = pd.read_csv(f'data/{df_name}', index_col=[0])
     return df_to_load.to_dict('records'), df_name
+
+
+@app.callback(
+    Output('uploaded-file-div', 'children'),
+    Input('uploaded-file', 'contents'), Input('uploaded-file', 'filename'),
+)
+def upload_file(content, filename):
+
+    content_type, content_string = content.split(',')
+    decoded = base64.b64decode(content_string)
+
+    try:
+        if 'csv' in filename:
+                # Assume that the user uploaded a CSV file
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+
+
+        elif 'xls' in filename:
+            # Assume that the user uploaded an excel file
+            df = pd.read_excel(io.BytesIO(decoded))
+
+        else:
+            return 'Formato não compatível'
+
+    except Exception as err:
+        print(err)
+
+    return dbc.CardBody([
+                                    
+                dcc.Loading([
+                    html.P(filename, style=FONT_STYLE)
+                ], className='col-4'),
+
+                dbc.Col([
+                    html.Button([
+                        html.I(className='bi bi-search')
+                    ], className='btn btn-outline-primary'),
+                    html.Button([
+                        html.I(className='bi bi-check2')
+                    ], className='btn btn-outline-success'),
+                    html.Button([
+                        html.I(className='bi bi-x-lg')
+                    ], className='btn btn-outline-danger'),
+                ], className='col-8 align-self-end')
+
+        ], className='row shadow-sm')

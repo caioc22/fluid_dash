@@ -4,6 +4,8 @@ import dash_bootstrap_components as dbc
 from pages.topbar import topbar
 from pages.sidebar import sidebar_full
 
+from static.styles import *
+
 app = Dash(
     __name__, 
     external_stylesheets=[
@@ -21,19 +23,14 @@ app = Dash(
 # html.Link(href='/assets/custom.css', rel='stylesheet'),
 app.title = 'Fluid.BI'
 
-
-CONTENT_STYLE = {
-    "margin-left": "12rem",
-}
-
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False), 
-    
+    dcc.Store(id='toggle-accumulator'),    
     html.Div(id='sidebar', children=[sidebar_full]),
 
     html.Div(
-        # id='page-content',
-        style=CONTENT_STYLE,
+        id='content-wrapper',
+        # style=CONTENT_STYLE,
         children=[
             topbar,
             html.Div(

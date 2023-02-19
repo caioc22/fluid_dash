@@ -25,7 +25,8 @@ dados = dbc.Row(
                                 },
                             className='shadow-sm',
                             children=[
-                                html.H6('Upload', style={'width': '80%', **FONT_STYLE}),
+                                html.H5('Upload', style={'width': '80%', **FONT_STYLE}),
+                                html.P('Selecione um tipo de documento:', style={'width': '80%', **FONT_STYLE}),
                                 
                                 html.Div([
                                     dbc.Col([
@@ -34,21 +35,29 @@ dados = dbc.Row(
                                             className=CARD_CLASS,
                                             style=FONT_STYLE,
                                             options=['DRE', 'Balanço Patrimonial', 'Balancete', 'Fluxo de Caixa'],
+                                            placeholder='Tipo'
                                         ),
-                                    ], className='col-10'),
+                                    ], className='col-9'),
                                     dbc.Col([
                                         html.Button(
                                             className='btn btn-outline-secondary align-items-center',
                                             children=[
                                                 dcc.Upload(
+                                                    id='uploaded-file',
                                                     children=[ html.I(className='bi bi-upload') ],
                                                     multiple=False,
                                                 )
                                             ]
                                         )
-                                    ], className='col-2')
-                                ], className='row')
+                                    ], className='col-3')
+                                ], className='row'),
 
+                                html.Div(
+                                    id='uploaded-file-div', 
+                                    className='align-items-center justify-content-center', 
+                                    style={'width': '90%', **FONT_STYLE}
+                                ),
+                                
                             ]
                         ),
                         dbc.Card(
@@ -61,7 +70,7 @@ dados = dbc.Row(
                             children=[
                                 html.Div([
                                     dbc.Col([ 
-                                        html.H6('Dados Salvos', style={'width': '80%', **FONT_STYLE}) 
+                                        html.H5('Dados Salvos', style={'width': '80%', **FONT_STYLE}) 
                                     ], className='col-8'),
                                     dbc.Col([ 
                                         dcc.Dropdown(
@@ -88,7 +97,7 @@ dados = dbc.Row(
                                     style_cell={**FONT_STYLE},
                                     style_cell_conditional=[
                                         {
-                                            'if': {'column_id': 'nome'},
+                                            'if': {'column_id': 'Nome'},
                                             'textAlign': 'left'
                                         }
                                     ],
@@ -116,33 +125,28 @@ dados = dbc.Row(
                                 dbc.Row(
                                     children=[
                                         dbc.Col(
-                                            className='col-6',
+                                            className='col-9',
                                             children=[ 
                                                 html.H5(id='data-table-title', style=FONT_STYLE) 
                                             ]
                                         ),
                                         dbc.Row([
-                                            dbc.Col( 
-                                                className='col-1',
-                                                children=[ 
+                                            dbc.Col([ 
                                                 html.Button(
                                                     id='save-table', 
                                                     style=FONT_STYLE, 
                                                     className='btn btn-outline-warning',
                                                     children=['Renomear']) 
-                                                ]
-                                            ),
-                                            dbc.Col( 
-                                                className='col-1',
-                                                children=[ 
+                                            ]),
+                                            dbc.Col([ 
                                                 html.Button(
                                                     id='save-table', 
                                                     style=FONT_STYLE, 
                                                     className='btn btn-outline-danger',
                                                     children=['Deletar']) 
-                                                ]
-                                            ),
-                                        ], className='justify-content-end',)
+                                            ]),
+                                        ], className='col-3',)
+
                                     ]
                                 ),
 

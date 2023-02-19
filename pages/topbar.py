@@ -7,7 +7,7 @@ topbar = dbc.Row(
             className='d-flex shadow-sm align-items-center',
             style={
                 'width': '100%', 
-                'padding': '10px', 
+                'padding': '15px', 
             },
             children = [
                 dbc.Col(
@@ -20,17 +20,17 @@ topbar = dbc.Row(
                     ]
                 ),
                 dbc.Row(
-                    className='align-items-center justify-content-end',
+                    className='col-2 align-items-center justify-content-end',
                     children=[
                         dbc.Col([ 
                             html.H6('Olá, Fulano!', style=FONT_STYLE) 
-                        ], className='col-1'),
+                        ]),
                         dbc.Col([ 
                             html.I(
                                 className="bi bi-person-circle", 
                                 style={'font-size': '30px', 'color': STD_BLUE}
                             ) 
-                        ], className='col-1'),
+                        ]),
                     ]
                 )
             ]
