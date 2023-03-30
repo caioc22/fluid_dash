@@ -7,12 +7,10 @@ from index import *
 
 from utils.kpis import *
 
-
 meses = [
     'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
     'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'
 ]
-
 
 ### DRE ###
 def create_update_dre_chart_function(i):
@@ -71,13 +69,10 @@ def create_update_dre_chart_function(i):
 
     return update_dre_chart
 
-for i in range(0, 32):
+for i in range(32):
     app.callback(
-        Output(f'dre-chart-{i+1}-title', 'children'),
-        Output(f'dre-chart-{i+1}', 'figure'),
-
-        State('url', 'pathname'), 
-        Input('dre-period-dropdown', 'value'),
+        Output(f'dre-chart-{i+1}-title', 'children'), Output(f'dre-chart-{i+1}', 'figure'),
+        State('url', 'pathname'), Input('dre-period-dropdown', 'value'),
     )(create_update_dre_chart_function(i))
 
 
