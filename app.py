@@ -1,4 +1,5 @@
 from dash import Dash, dash_table, html, dcc, Output, Input, State
+import sys
 import dash_bootstrap_components as dbc
 
 from pages.topbar import topbar
@@ -25,7 +26,7 @@ app.title = 'Fluid.BI'
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False), 
-    dcc.Store(id='toggle-accumulator'),    
+    dcc.Store(id='toggle-accumulator'),
     html.Div(id='sidebar', children=[sidebar_full]),
 
     html.Div(
@@ -49,4 +50,4 @@ from callbacks import *
 
 
 if __name__ == '__main__':
-    app.run_server(port=8001)#, debug=False)
+    app.run_server(port=sys.argv[1], debug=eval(sys.argv[2]) )

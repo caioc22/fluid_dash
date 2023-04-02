@@ -26,21 +26,22 @@ dados = dbc.Row(
                             className='shadow-sm',
                             children=[
                                 html.H5('Upload', style={'width': '80%', **FONT_STYLE}),
-                                html.P('Selecione um tipo de documento:', style={'width': '80%', **FONT_STYLE}),
+                                html.P('Faça o upload de um documento:', style={'width': '80%', **FONT_STYLE}),
                                 
                                 html.Div([
-                                    dbc.Col([
-                                        dcc.Dropdown(
-                                            id='kind-data-dropdwon',
-                                            className=CARD_CLASS,
-                                            style=FONT_STYLE,
-                                            options=['DRE', 'Balanço Patrimonial', 'Balancete', 'Fluxo de Caixa'],
-                                            placeholder='Tipo'
-                                        ),
-                                    ], className='col-9'),
+                                    # dbc.Col([
+                                    #     dcc.Dropdown(
+                                    #         id='kind-data-dropdwon',
+                                    #         className=CARD_CLASS,
+                                    #         style=FONT_STYLE,
+                                    #         options=['DRE', 'Balanço Patrimonial', 'Balancete', 'Fluxo de Caixa'],
+                                    #         placeholder='Tipo'
+                                    #     ),
+                                    # ], className='col-9'),
                                     dbc.Col([
                                         html.Button(
                                             className='btn btn-outline-secondary align-items-center',
+                                            style={'width': '100%'},
                                             children=[
                                                 dcc.Upload(
                                                     id='uploaded-file',
@@ -49,7 +50,7 @@ dados = dbc.Row(
                                                 )
                                             ]
                                         )
-                                    ], className='col-3')
+                                    ], style={'padding-left': 20, 'padding-right': 20,})#, className='col-3')
                                 ], className='row'),
 
                                 html.Div(
@@ -176,7 +177,10 @@ dados = dbc.Row(
                         )
 
                     ]
-                )
+                ),
+
+                dcc.Store(id='file-uploaded'),
+                dcc.Input(id='file-uploaded-name', type='hidden', value=''),
 
             ]
         )

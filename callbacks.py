@@ -1,3 +1,4 @@
+import dash
 import dash_bootstrap_components as dbc
 from plotly import express as px, graph_objects as go
 import pandas as pd, numpy as np
@@ -5,7 +6,7 @@ import os, re, base64, io
 
 from index import *
 
-from utils.kpis import *
+from utils import *
 
 meses = [
     'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
@@ -520,57 +521,101 @@ def update_saved_data_table(url, ano):
 
 
 @app.callback(
-    Output('data-table', 'data'), Output('data-table-title', 'children'),
-    Input('saved-data-table', 'selected_rows'), Input('saved-data-table', 'data'),
+    Output('uploaded-file-div', 'children'), 
+    Output('file-uploaded', 'data'),
+    Output('file-uploaded-name', 'value'),
+
+    Input('uploaded-file', 'contents'), 
+    Input('uploaded-file', 'filename'),
 )
-def show_selected_saved_table(row, data):
-    row = [0] if row is None else row
-    df_name = data[row[0]]['Nome']
-    df_to_load = pd.read_csv(f'data/{df_name}', index_col=[0])
-    return df_to_load.to_dict('records'), df_name
+def process_uploaded_file(content, filename):
+    if content is None:  # if no file is uploaded yet, return None
+        return None, None, None
+    # doc_component = dbc.CardBody([
+                                    
+    #             dcc.Loading([
+    #                 html.P(filename, style=FONT_STYLE)
+    #             ], className='col-4'),
 
+    #             dbc.Col([
+    #                 html.Button([
+    #                     html.I(className='bi bi-search')
+    #                 ], className='btn btn-outline-primary'),
+    #                 html.Button([
+    #                     html.I(className='bi bi-check2')
+    #                 ], className='btn btn-outline-success'),
+    #                 html.Button([
+    #                     html.I(className='bi bi-x-lg')
+    #                 ], className='btn btn-outline-danger'),
+    #             ], className='col-8 align-self-end')
 
-@app.callback(
-    Output('uploaded-file-div', 'children'),
-    Input('uploaded-file', 'contents'), Input('uploaded-file', 'filename'),
-)
-def upload_file(content, filename):
-
+    #     ], className='row shadow-sm')
+    print(len(content))
     content_type, content_string = content.split(',')
     decoded = base64.b64decode(content_string)
 
     try:
         if 'csv' in filename:
-                # Assume that the user uploaded a CSV file
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-
-
         elif 'xls' in filename:
-            # Assume that the user uploaded an excel file
             df = pd.read_excel(io.BytesIO(decoded))
-
         else:
-            return 'Formato não compatível'
+            return None, None, 'Formato invalido!'
 
     except Exception as err:
         print(err)
+    # classifing data
+    cleaned_df = clean_sheet(df)
+    vectorized_data = vectorize_csv(cleaned_df, vectorizer, True)
+    doc_type = classifier.predict(vectorized_data)
+    print(doc_type)
+    
+    if doc_type == 0: message = 'Este não é um documento contábil !'
+    if doc_type == 1: message = 'DRE identificado'
+    if doc_type == 2: message = 'Balancete identificado'
+    
+    component = html.Div([
+            dcc.Loading([
+                html.H5(message, style=FONT_STYLE)
+            ])
+    ], style={'align-items': 'center', 'padding': 20, 'width': '100%'})
 
-    return dbc.CardBody([
-                                    
-                dcc.Loading([
-                    html.P(filename, style=FONT_STYLE)
-                ], className='col-4'),
+    if doc_type == 0: 
+        return component, None, filename
 
-                dbc.Col([
-                    html.Button([
-                        html.I(className='bi bi-search')
-                    ], className='btn btn-outline-primary'),
-                    html.Button([
-                        html.I(className='bi bi-check2')
-                    ], className='btn btn-outline-success'),
-                    html.Button([
-                        html.I(className='bi bi-x-lg')
-                    ], className='btn btn-outline-danger'),
-                ], className='col-8 align-self-end')
+    # scraping data
+    df = data_scraping(df, doc_type)
+    return component, df.to_dict('records'), filename
 
-        ], className='row shadow-sm')
+
+@app.callback(
+    Output('data-table', 'data'), Output('data-table-title', 'children'),
+    Input('saved-data-table', 'selected_rows'), 
+    State('saved-data-table', 'data'),
+    Input('file-uploaded', 'data'),
+    State('file-uploaded-name', 'value')
+)
+def show_data_table(selected_rows, data, uploaded_data, filename):
+
+    ctx = dash.callback_context # distinguish which input triggered the function
+    if not ctx.triggered:
+        raise dash.exceptions.PreventUpdate
+    triggered_input = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    # Handle the two cases based on the triggered input
+    if triggered_input == 'saved-data-table':
+        print('saved')
+        row = [0] if selected_rows is None else selected_rows
+        df_name = data[row[0]]['Nome']
+        df = pd.read_csv(f'data/{df_name}', index_col=[0])
+        return df.to_dict('records'), df_name
+
+    elif triggered_input == 'file-uploaded':
+        print('uploaded', filename)
+        if uploaded_data is None:
+            return None, 'Formato inválido!'
+        else:
+            return uploaded_data, filename
+    
+    else:
+        raise ValueError(f'Unexpected input: {triggered_input}')
