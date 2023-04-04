@@ -50,4 +50,4 @@ from callbacks import *
 
 
 if __name__ == '__main__':
-    app.run_server(port=sys.argv[1], debug=eval(sys.argv[2]) )
+    app.run_server(port=sys.argv[1], debug=False)#eval(sys.argv[2]) )
